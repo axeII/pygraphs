@@ -23,4 +23,5 @@ clean:
 
 clr:
 	clear
+
 fresh : clean all clr
