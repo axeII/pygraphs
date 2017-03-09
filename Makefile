@@ -6,22 +6,27 @@
 #
 
 all:
-	for pyfile in $$(ls -d ./tasks/*.py) ; do \
-		FILENAME=$$(echo $$pyfile | cut -d / -f3 | cut -d . -f1) ; \
+	for pyfile in $$(ls -d ./src/*.py) ; do \
+		FILENAME=$$(printf $$pyfile | cut -d / -f3 | cut -d . -f1) ; \
 	    touch $$FILENAME ; \
 	    chmod a+x $$FILENAME ; \
-		echo "#!/bin/bash" > $$FILENAME ; \
-		echo "$$(which python3) $$pyfile" >> $$FILENAME ; \
+		printf "#!$$(which bash)\n" > $$FILENAME ; \
+		printf "# Executing script - which python3 and source script path"
+		printf "\"$$(which python3)\" \"$$pyfile\"" >> $$FILENAME ; \
 	done
 
 
 clean:
-	for pyfile in $$(ls -d ./tasks/*.py) ; do \
-		FILENAME=$$(echo $$pyfile | cut -d / -f3 | cut -d . -f1) ; \
+	for pyfile in $$(ls -d ./src/*.py) ; do \
+		FILENAME=$$(printf $$pyfile | cut -d / -f3 | cut -d . -f1) ; \
 		rm -f $$FILENAME ; \
 	done
 
 clr:
 	clear
+
+install:
+	cp ./src/new_task.sh ./src/new_task
+	chmod a+x ./src/new_task
 
 fresh : clean all clr

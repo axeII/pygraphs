@@ -32,5 +32,8 @@ class MaticeSousednosti:
     def vratHodnoty(self):
         return [x for x in self.matice.values()]
 
+    def vratSpecificOut(self):
+        pass
+
 def check():
     print('working neco')

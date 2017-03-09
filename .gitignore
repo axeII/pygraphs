@@ -93,3 +93,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Specific project ignore
+src/new_task
