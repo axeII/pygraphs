@@ -1,0 +1,6 @@
+Centralni, Brno_01, Brno_02, Praha, Ostrava, Export
+      auto_01: Centralni > Brno_01 > Brno_02
+      auto_02: Centralni > Ostrava > Centralni
+      letadlo_01: Centralni > Export
+      vlak_a: Praha > Centralni
+      auto_03: Brno_01 > Brno_02
