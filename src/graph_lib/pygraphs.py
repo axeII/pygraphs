@@ -67,26 +67,59 @@ class HMGraph:
         add_new_node kteoru pak volam pokud next neni prazdny jinak vloznim
         novy node do nextu.
         """
-        search_name = data[0]
-        search_que = data[1:]
-        for element in self.matrix:
-            if element['node_name'] == search_name:
-                operative = element
+        search_que = [(data[x],data[x+1]) for x in range(len(data)-1)]
+        operative = None
+        for search_name in search_que:
+            for element in self.matrix:
+                if element['node_name'] == search_name[0]:
+                    operative = element
 
-        if operative:
-            # pro zbytek v ceste
-            for element_que in range(search_que):
-                new_node = {}
-                new_node['prvek'] = element_que + 1
-                """
-                celkem zbytecne kdyz je to klic ale muzu sem narvat
-                dopravni prostredek napr misto repeat nazvu
-                """
-                new_node['node_name'] = search_que[element_que]
-                new_node['counting'] = 1
-                operative[search_que[element_que]] = new_node
-        else:
-            print('Error: No Node found')
+            if operative:
+                if search_name[1] not in operative.keys():
+                    """
+                    celkem zbytecne kdyz je to klic ale muzu sem narvat
+                    dopravni prostredek napr misto repeat nazvu
+                    """
+                    if any(self.nodes in operative):
+                        id_ = count([x for x in operative.keys() if x in self.nodes])
+                    else:
+                        id_ = 1
+
+                    operative[search_name[1]] = HMGraph.create_node(
+                            id_,search_name[1],1)
+                else:
+                    operative[search_name[1]]['counting'] += 1
+            else:
+                print('Error: No Node found')
+
+    #request for refactoing
+    def find_most_used_node(self):
+        """
+        this is first task this may be putting into distribution.py
+        """
+        l = []
+        for x in self.matrix:
+            count = 0
+            if any(self.nodes in x.keys()):
+                count = 1
+                for a in [y for y in x.keys() if y in self.nodes]:
+                    count += 1
+            l.append((x['name_node'],count))
+
+        return l
+
+    #request for refactoing
+    def double_edges(self):
+        """
+        this is second task, this also shout be inserted into distribution.py 
+        """
+        for x in self.matrix:
+            keys = [z for z in x.keys() if z in self.nodes]
+            for a,b in x.items():
+                if a in keys:
+                    if b['counting'] > 1:
+                        return True
+        return False
 
 class LinkedGraph:
 
@@ -99,4 +132,6 @@ class EdgeGraph:
 
 if __name__ == "__main__":
     test1 = HMGraph([1,2,3])
-    test1.print_hashMatrix()
+    #test1.insert_edges(['auto','bashn','cesta'])
+    test1.double_edges()
+    #test1.print_hashMatrix()
