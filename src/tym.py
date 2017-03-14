@@ -15,17 +15,39 @@ if os.path.isdir('./lib'):
 else:
     sys.path.append('../lib')
 
-import graph_lib.pygraphs as pyg
+
 import graph_lib.pyparse as pyp
-
-
-pyp.get_input_data()
+import graph_lib.pygraphs as pyg
 
 def parse_data(data):
-	pass
+    parsed_teams = []
+    for nodes in data:
+        (team, project) = nodes.split(':')
+        team = team.split('-')
+        team = [pyp.strip_param(member) for member in team]
+        parsed_teams.append(team)
 
-def solve_with_graph():
-	pass
+    return parsed_teams
 
-def print_final():
-	pass
+def solve_with_graph(sol_data):
+    nodes = set()
+    [nodes.update(nod) for nod in [sol for sol in sol_data]]
+    hm = pyg.HMGraph(list(nodes))
+    for sol in sol_data:
+        hm.insert_edges(sol)
+    clique = hm.find_clique()
+
+    return clique
+
+def print_final(final_data):
+    if final_data:
+        for data in final_data:
+            print(data)
+
+if __name__ == "__main__":
+    try:
+        data = parse_data(pyp.get_input_data(False))
+        cli = solve_with_graph(data)
+        print_final(cli)
+    except KeyboardInterrupt:
+        pass

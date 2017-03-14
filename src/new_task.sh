@@ -10,12 +10,20 @@ if os.path.isdir('./lib'):
     sys.path.append('./lib')
 else:
     sys.path.append('../lib')\n
-from graph_lib.pygraphs import *\n\n"
+
+import graph_lib.pyparse as pyp
+import graph_lib.pygraphs as pyg\n\n"
 
 FUNCTIONS="def get_input_data():\n\tpass
 def parse_data(data):\n\tpass\n
 def solve_with_graph():\n\tpass\n
 def print_final():\n\tpass\n"
+
+MAIN="if __name__ == \"__main__\":
+\ttry:
+\t\tprint(\"Put task execution here.\")
+\texcept KeyboardInterrupt:
+\t\tpass"
 
 for file in $@ ; do
 	NAME="$file.py" ;
@@ -25,5 +33,6 @@ for file in $@ ; do
 	printf "$AUTHOR\n\n" >> $NAME ;
 	printf "$TEXT" >> $NAME ;
 	printf "$FUNCTIONS" >> $NAME ;
+	printf "$MAIN" >> $NAME ;
 	printf "Generated $NAME file\n"
 done

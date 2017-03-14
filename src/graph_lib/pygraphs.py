@@ -30,6 +30,8 @@ class HMGraph:
         for spec_node in range(len(setup_nodes)):
             self.matrix.append(HMGraph.create_node(spec_node,setup_nodes[spec_node],0))
 
+        self.get_nodes()
+
     def add_node(self,name = ""):
         self.matrix.append(HMGraph.create_node(int(len(self.matrix)+1),name,0))
 
@@ -51,7 +53,8 @@ class HMGraph:
             pp.pprint(self.matrix)
 
     def get_nodes(self):
-        self.nodes = [node['node_name'] for node in self.matrix]
+        if not self.nodes:
+            self.nodes = [node['node_name'] for node in self.matrix]
         return self.nodes
 
     def get_edges(self):
@@ -81,7 +84,11 @@ class HMGraph:
                     celkem zbytecne kdyz je to klic ale muzu sem narvat
                     dopravni prostredek napr misto repeat nazvu
                     """
+                    print(self.nodes)
+                    print("any",list(map(lambda x:x in
+                        operative.keys(),self.nodes)))
                     if any(map(lambda x:x in operative.keys(),self.nodes)):
+                        print([x for x in operative.keys() if x in self.nodes])
                         id_ = count([x for x in operative.keys() if x in self.nodes])
                     else:
                         id_ = 1
@@ -167,6 +174,22 @@ class HMGraph:
 
         return colors
 
+    def find_clique(self):
+        if not self.edges:
+            self.get_edges()
+
+        edges = {}
+        for node,edges in self.edges.items():
+            edges[node] = (edges,len(edges))
+        while not all(leng[0] == leng for leng in [ed[1] for ed in edges.values()]):
+            del_key = min([(ed,val) for ed,val in edges.times()],lambda x :
+                x[1])[0]
+            del edges[del_key]
+            for node,edges in self.edges.items():
+                new_edges = edges.remove(del_key)
+                edges[node] = (new_edges,len(new_edges))
+
+        return (fin_node for fin_node in edges.keys())
 
 class LinkedGraph:
     """
@@ -176,7 +199,11 @@ class LinkedGraph:
     pass
 
 if __name__ == "__main__":
-    test1 = HMGraph([1,2,3])
-    #test1.insert_edges(['auto','bashn','cesta'])
-    test1.double_edges()
+    test1 = HMGraph(['A','B','C'])
+    test1.insert_edges(['A','B'])
+    test1.insert_edges(['B','C'])
+    test1.insert_edges(['A','C'])
+    print(test1.nodes)
+    print(test1.get_edges())
+    #test1.double_edges()
     #test1.print_hashMatrix()

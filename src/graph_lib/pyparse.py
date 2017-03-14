@@ -19,7 +19,7 @@ def get_input_data(first_row_diffrent = True):
     """
     data_stream = []
     for line in fileinput.input():
-        if fileinput.isfirstline():
+        if fileinput.isfirstline() and first_row_diffrent:
             data_stream.append([strip_param(line)])
         else:
             data_stream.append(strip_param(line))
