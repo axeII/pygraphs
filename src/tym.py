@@ -15,10 +15,12 @@ if os.path.isdir('./lib'):
 else:
     sys.path.append('../lib')
 
-from graph_lib.pygraphs import *
+import graph_lib.pygraphs as pyg
+import graph_lib.pyparse as pyp
 
-def get_input_data():
-	pass
+
+pyp.get_input_data()
+
 def parse_data(data):
 	pass
 

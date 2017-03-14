@@ -32,7 +32,7 @@ def get_input_data():
             data_stream.append([strip_param(line)])
         else:
             data_stream.append(strip_param(line))
-    return pole
+    return data_stream
 
 def parse_data(data):
     parsed_teams = []
