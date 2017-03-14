@@ -39,12 +39,12 @@ class HMGraph:
         else:
             self.matrix.pop(which)
 
-    def print_hashMatrix(self,order = None):
+    def print_hashMatrix(self,level = None):
         """
         pokud je lepsi zpusob jak to vypast tak ho dat sem
         """
         pp = pprint.PrettyPrinter(indent=4)
-        if order:
+        if level:
             for node in self.matrix:
                 pp.pprint(node)
         else:
@@ -56,9 +56,10 @@ class HMGraph:
 
     def get_edges(self):
         for node in self.nodes:
-            self.edges[node] = [y for y in [x.keys() for x in self.matrix] if y
+            new_edges = [y for y in [x.keys() for x in self.matrix] if y
                     in self.nodes]
-        self.edges = [node for node in self.matrix]
+            if not self.edges.get(node) or self.edges[node] != new_edges:
+                self.edges[node] = new_edges
         return self.edges
 
     def insert_edges(self,data):
@@ -80,7 +81,7 @@ class HMGraph:
                     celkem zbytecne kdyz je to klic ale muzu sem narvat
                     dopravni prostredek napr misto repeat nazvu
                     """
-                    if any(self.nodes in operative):
+                    if any(map(lambda x:x in operative.keys(),self.nodes)):
                         id_ = count([x for x in operative.keys() if x in self.nodes])
                     else:
                         id_ = 1
@@ -100,18 +101,18 @@ class HMGraph:
         l = []
         for x in self.matrix:
             count = 0
-            if any(self.nodes in x.keys()):
+            if any(map(lambda y:y in x.keys(),self.nodes)):
                 count = 1
                 for a in [y for y in x.keys() if y in self.nodes]:
                     count += 1
-            l.append((x['name_node'],count))
+            l.append((x['node_name'],count))
 
-        return l
+        return max(l, key=lambda x:x[1])
 
     #request for refactoing
     def double_edges(self):
         """
-        this is second task, this also shout be inserted into distribution.py 
+        this is second task, this also shout be inserted into distribution.py
         """
         for x in self.matrix:
             keys = [z for z in x.keys() if z in self.nodes]
@@ -121,12 +122,56 @@ class HMGraph:
                         return True
         return False
 
+    #request for refactoing
+    def has_cycle(self):
+
+        def dfs(graph, start):
+            visited, stack = set(), [start]
+            while stack:
+                vertex = stack.pop()
+                if vertex not in visited:
+                    visited.add(vertex)
+                    stack.extend(graph[vertex] - visited)
+            return visited
+
+        graph = self.get_edges()
+        for k,v in graph:
+            if len(v) > 0:
+                if k in dfs(graph,k):
+                    return True
+            else:
+                pass
+
+        return False
+
+    def is_biparted(self):
+        """
+        is_biparted nejdrive si vytvori dict uzlu s None barvou a pak si
+        vytvor
+        """
+        colors = {x: None for x in self.get_nodes()}
+        #d = {key: value for (key, value) in iterable}
+
+        graph = self.get_edges()
+        visited, queue = set(), [start]
+        colors[start] = "cervena"
+        while queue:
+            vertex = queue.pop(0)
+            if vertex not in visited:
+                visited.add(vertex)
+                queue.extend(graph[vertex] - visited)
+                for x in graph[vertex] - visited:
+                    if colors[x] == colors[vertex]:
+                        return False
+                    colors[x] = "zelena" if colors[vertex] == "cerverna" else "cerverna"
+
+        return colors
+
+
 class LinkedGraph:
-
-    pass
-
-
-class EdgeGraph:
+    """
+    Implementace grafu pres ukazatele
+    """
 
     pass
 

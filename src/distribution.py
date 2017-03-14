@@ -43,22 +43,27 @@ def parse_data(data):
     return (arg,parsed_data)
 
 def solve_with_graph(sol_data):
-    #print(sol_data[0])
-    pg = pyg.MaticeSousednosti(sol_data[0])
+    hm = pyg.HMGraph(sol_data[0])
     for auto,places in sol_data[1]:
-        print(auto,places)
-    pg.vypisMS()
+        #what do with auto?
+        hm.insert_edges(places)
 
-    return ""
+    #hm.print_hashMatrix()
+    final = {}
+    (final['place'],final['count']) = hm.find_most_used_node()
+    final['connection'] = hm.double_edges()
+    final['warehouse'] = hm.has_cycle()
+
+    return final
 
 def print_final(final_data):
     if final_data:
         print("nejvice navstevovany: %s %i" %
-                (final_data['place'],final_data['num']))
+                (final_data['place'],final_data['count']))
         print("existuje vice spojeni: %s" %
-                'ano' if final_data['exist_spoj'] else 'ne')
+                'ano' if final_data['connection'] else 'ne')
         print("zbozi zpet do skladu: %s" %
-                'ano' if final_data['sklad'] else 'ne')
+                'ano' if final_data['warehouse'] else 'ne')
 
 if __name__ == "__main__":
     try:
