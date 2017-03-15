@@ -9,11 +9,24 @@ import os
 import sys
 import pprint
 
+"""
+graph = { "a" : ["c"],
+          "b" : ["c", "e"],
+          "c" : ["a", "b", "d", "e"],
+          "d" : ["c"],
+          "e" : ["c", "b"],
+          "f" : []
+        }
+"""
 class HMGraph:
     """
     Hash Matrix Graph implementation.
     """
 
+    """
+    This is depreciated since i'll use list, in case it will be another dict
+    use this to create it, otherwise delete.
+    """
     def create_node(node_id,node_name,node_count):
         new_node = {}
         new_node['element'] = node_id + 1
@@ -23,34 +36,43 @@ class HMGraph:
 
         return new_node
 
-    def __init__(self,setup_nodes):
-        self.nodes = []
-        self.edges = {}
-        self.matrix = []
-        for spec_node in range(len(setup_nodes)):
-            self.matrix.append(HMGraph.create_node(spec_node,setup_nodes[spec_node],0))
+    def __init__(self,setup_nodes = None):
+        self.hashmax = {}
+        if setup_nodes and isinstance(setup_nodes,list):
+            for spec_node in range(len(setup_nodes)):
+                self.hashmax[spec_node] = []
+                #(HMGraph.create_node(spec_node,setup_nodes[spec_node],0))
 
-        self.get_nodes()
 
-    def add_node(self,name = ""):
-        self.matrix.append(HMGraph.create_node(int(len(self.matrix)+1),name,0))
-
-    def pop_node(self,which = None):
-        if not which:
-            self.matrix.pop()
+    def add_node(self,name = "",edges = [], update = ()):
+        if name and name not in self.hashmax.keys():
+            if not edges:
+                print("Info: No edges were inputed with node %s" % name)
+            self.hashmax[name] = edges
         else:
-            self.matrix.pop(which)
+            print('Error: Node: [%s] is alredy in this graph' % name)
+        if update:
+            for up_node in update:
+                self.hashmax[up_node].append(name)
+            #update graph with new edges
+            #(HMGraph.create_node(int(len(self.matrix)+1),name,0))
 
-    def print_hashMatrix(self,level = None):
+    def remove_node(self,which = None):
+        if which:
+            del self.hashmax[which]
+            for hash_list in self.hasmax.values():
+                hash_list.remove(which)
+        else:
+            pass
+           #if it's not set what to do? 
+
+    def print_hashMap(self,level = None):
         """
-        pokud je lepsi zpusob jak to vypast tak ho dat sem
+        is there better way to print graph so far?
         """
         pp = pprint.PrettyPrinter(indent=4)
-        if level:
-            for node in self.matrix:
-                pp.pprint(node)
-        else:
-            pp.pprint(self.matrix)
+        if not level:
+            pp.pprint(self.hasmax)
 
     def get_nodes(self):
         if not self.nodes:
