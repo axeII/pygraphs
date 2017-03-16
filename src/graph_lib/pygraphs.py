@@ -8,6 +8,7 @@ __author__ = 'Ales Lerch'
 import os
 import sys
 import pprint
+import collections
 
 """
 graph = { "a" : ["c"],
@@ -23,23 +24,21 @@ class HMGraph:
     Hash Matrix Graph implementation.
     """
 
-    """
-    This is depreciated since i'll use list, in case it will be another dict
-    use this to create it, otherwise delete.
-    """
-    def create_node(node_id,node_name,node_count):
-        new_node = {}
-        new_node['element'] = node_id + 1
-        new_node['node_name'] = node_name
-        new_node['counting'] = node_count
-        #new_node['next'] = None
-
-        return new_node
-
-    def __init__(self,setup_nodes = None):
+    def __init__(self,setup_nodes = []):
+        """
+        Maybe different library for for hashmax if to include order key inputs if
+        needed in this data structure
+        data_dict = collections.OrderedDict(sorted(data_dict.items()))
+        """
         self.hashmax = {}
+        self.hashmax = collections.OrderedDict()
+        self.double_round = False
         if setup_nodes and isinstance(setup_nodes,list):
-            for spec_node in range(len(setup_nodes)):
+            """
+            In case to use indexes as int use range(len(setup_nodes))
+            else let it as key name it's python
+            """
+            for spec_node in setup_nodes:
                 self.hashmax[spec_node] = []
                 #(HMGraph.create_node(spec_node,setup_nodes[spec_node],0))
 
@@ -60,39 +59,55 @@ class HMGraph:
     def remove_node(self,which = None):
         if which:
             del self.hashmax[which]
-            for hash_list in self.hasmax.values():
+            for hash_list in self.hashmax.values():
                 hash_list.remove(which)
         else:
             pass
-           #if it's not set what to do? 
+            #if it's not set what to do?
+
+    def insert_edge(self,node,target_edge):
+        if not target_edge in self.hashmax[node]:
+            self.hashmax[node].append(target_edge)
+        else:
+            self.double_round = True
 
     def print_hashMap(self,level = None):
         """
-        is there better way to print graph so far?
+        Currently just pretty print.
         """
-        pp = pprint.PrettyPrinter(indent=4)
-        if not level:
-            pp.pprint(self.hasmax)
+        pp = pprint.PrettyPrinter(indent=2)
+        if level:
+            pprint.pprint(self.hashmax,width=level)
+        else:
+            print('{')
+            for key,val in self.hashmax.items():
+                print('  \"%s\" : %s' % (key,val))
+            print('}')
 
     def get_nodes(self):
-        if not self.nodes:
-            self.nodes = [node['node_name'] for node in self.matrix]
-        return self.nodes
+        return sorted([nod for nod in self.hashmax.keys()])
 
     def get_edges(self):
+        """
         for node in self.nodes:
             new_edges = [y for y in [x.keys() for x in self.matrix] if y
                     in self.nodes]
             if not self.edges.get(node) or self.edges[node] != new_edges:
                 self.edges[node] = new_edges
-        return self.edges
+        """
+        # l = [1,2,3]
+        #print(list(zip(['a' for b in l],[a for a in l])))
+        #[zip(tup[0],[a for a in tup[1]]) for tup in [(node,edge) for node,edge
+        # in self.hashmax.items()]]
+        fin_edges = []
+        for node,edges in self.hashmax.items():
+            for edge in edges:
+                fin_edges.append((node,edge))
+        return fin_edges
 
     def insert_edges(self,data):
         """
-        Je moznost tuto cast programu napsat recurziven tak ze pridam funci
-        add_new_node kteoru pak volam pokud next neni prazdny jinak vloznim
-        novy node do nextu.
-        """
+        Depreciated!!
         search_que = [(data[x],data[x+1]) for x in range(len(data)-1)]
         operative = None
         for search_name in search_que:
@@ -102,10 +117,10 @@ class HMGraph:
 
             if operative:
                 if search_name[1] not in operative.keys():
-                    """
+
                     celkem zbytecne kdyz je to klic ale muzu sem narvat
                     dopravni prostredek napr misto repeat nazvu
-                    """
+
                     print(self.nodes)
                     print("any",list(map(lambda x:x in
                         operative.keys(),self.nodes)))
@@ -121,12 +136,12 @@ class HMGraph:
                     operative[search_name[1]]['counting'] += 1
             else:
                 print('Error: No Node found')
+    """
 
     #request for refactoing
     def find_most_used_node(self):
         """
         this is first task this may be putting into distribution.py
-        """
         l = []
         for x in self.matrix:
             count = 0
@@ -137,9 +152,18 @@ class HMGraph:
             l.append((x['node_name'],count))
 
         return max(l, key=lambda x:x[1])
+        """
+        most_used = {}
+        for key,val in self.hashmax.items():
+            most_used[key] = 1 if val else 0
+            most_used[key] += [True if key in val else False for val in
+                    self.hashmax.values()].count(True)
+
+        max_used = max(most_used, key = lambda k : most_used[k])
+        return (max_used,most_used[max_used])
 
     #request for refactoing
-    def double_edges(self):
+    def has_double_edges(self):
         """
         this is second task, this also shout be inserted into distribution.py
         """
@@ -222,10 +246,10 @@ class LinkedGraph:
 
 if __name__ == "__main__":
     test1 = HMGraph(['A','B','C'])
-    test1.insert_edges(['A','B'])
-    test1.insert_edges(['B','C'])
-    test1.insert_edges(['A','C'])
-    print(test1.nodes)
-    print(test1.get_edges())
-    #test1.double_edges()
-    #test1.print_hashMatrix()
+    test1.insert_edge('A','B')
+    test1.insert_edge('B','C')
+    test1.insert_edge('A','C')
+    print("Nodes:",test1.get_nodes())
+    print("Edges:",test1.get_edges())
+    print("Double edges:",test1.double_round)
+    test1.print_hashMap()
