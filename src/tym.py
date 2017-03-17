@@ -34,7 +34,9 @@ def solve_with_graph(sol_data):
     [nodes.update(nod) for nod in [sol for sol in sol_data]]
     hm = pyg.HMGraph(list(nodes))
     for sol in sol_data:
-        hm.insert_edges(sol)
+        hm.insert_edge(sol[0],sol[1])
+        hm.insert_edge(sol[1],sol[0])
+    #hm.print_hashMap()
     clique = hm.find_clique()
 
     return clique
@@ -42,7 +44,7 @@ def solve_with_graph(sol_data):
 def print_final(final_data):
     if final_data:
         for data in final_data:
-            print(data)
+            print(", ".join(data))
 
 if __name__ == "__main__":
     try:

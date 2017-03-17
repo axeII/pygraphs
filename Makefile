@@ -10,9 +10,9 @@ all:
 		FILENAME=$$(printf $$pyfile | cut -d / -f3 | cut -d . -f1) ; \
 	    touch $$FILENAME ; \
 	    chmod a+x $$FILENAME ; \
-		printf "\t#!$$(which bash)\n" > $$FILENAME ; \
+		printf "#!$$(which bash)\n" > $$FILENAME ; \
 		printf "\tEditing $$FILENAME - python3 and script source path\n" ; \
-		printf "\t\"$$(which python3)\" \"$$pyfile\"" >> $$FILENAME ; \
+		printf "\"$$(which python3)\" \"$$pyfile\"" >> $$FILENAME ; \
 	done
 
 

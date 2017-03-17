@@ -33,13 +33,13 @@ def parse_data(data):
 def solve_with_graph(sol_data):
     hm = pyg.HMGraph(sol_data[0])
     for auto,places in sol_data[1]:
-        #what do with auto?
-        hm.insert_edges(places)
+        for dat in [(places[x],places[x+1]) for x in range(len(places)-1)]:
+            #print(dat,dat[0],dat[1])
+            hm.insert_edge(dat[0],dat[1])
 
-    #hm.print_hashMatrix()
     final = {}
     (final['place'],final['count']) = hm.find_most_used_node()
-    final['connection'] = hm.double_edges()
+    final['connection'] = hm.double_round
     final['warehouse'] = hm.has_cycle()
 
     return final
@@ -57,7 +57,6 @@ if __name__ == "__main__":
     try:
         data = parse_data(pyp.get_input_data())
         final_data = solve_with_graph(data)
-        final_data = {'place': 'Test','num': 4,'exist_spoj': True,'sklad': True}
-        #print_final(final_data)
+        print_final(final_data)
     except KeyboardInterrupt:
         pass

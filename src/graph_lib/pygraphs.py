@@ -39,7 +39,7 @@ class HMGraph:
             else let it as key name it's python
             """
             for spec_node in setup_nodes:
-                self.hashmax[spec_node] = []
+                self.hashmax[spec_node.strip()] = []
                 #(HMGraph.create_node(spec_node,setup_nodes[spec_node],0))
 
 
@@ -66,10 +66,10 @@ class HMGraph:
             #if it's not set what to do?
 
     def insert_edge(self,node,target_edge):
-        if not target_edge in self.hashmax[node]:
-            self.hashmax[node].append(target_edge)
-        else:
+        if target_edge in self.hashmax[node]:
             self.double_round = True
+        else:
+            self.hashmax[node].append(target_edge)
 
     def print_hashMap(self,level = None):
         """
@@ -84,8 +84,12 @@ class HMGraph:
                 print('  \"%s\" : %s' % (key,val))
             print('}')
 
-    def get_nodes(self):
-        return sorted([nod for nod in self.hashmax.keys()])
+    def get_nodes(self,specific = None):
+        nodes = sorted([nod for nod in self.hashmax.keys()])
+        if not specific:
+            return nodes
+        else:
+            return nodes[specific]
 
     def get_edges(self):
         """
@@ -95,10 +99,6 @@ class HMGraph:
             if not self.edges.get(node) or self.edges[node] != new_edges:
                 self.edges[node] = new_edges
         """
-        # l = [1,2,3]
-        #print(list(zip(['a' for b in l],[a for a in l])))
-        #[zip(tup[0],[a for a in tup[1]]) for tup in [(node,edge) for node,edge
-        # in self.hashmax.items()]]
         fin_edges = []
         for node,edges in self.hashmax.items():
             for edge in edges:
@@ -136,84 +136,83 @@ class HMGraph:
                     operative[search_name[1]]['counting'] += 1
             else:
                 print('Error: No Node found')
-    """
+        """
+        pass
 
-    #request for refactoing
     def find_most_used_node(self):
         """
         this is first task this may be putting into distribution.py
-        l = []
-        for x in self.matrix:
-            count = 0
-            if any(map(lambda y:y in x.keys(),self.nodes)):
-                count = 1
-                for a in [y for y in x.keys() if y in self.nodes]:
-                    count += 1
-            l.append((x['node_name'],count))
-
-        return max(l, key=lambda x:x[1])
         """
-        most_used = {}
+        most_used = {key: 0 for key in self.get_nodes()}
         for key,val in self.hashmax.items():
-            most_used[key] = 1 if val else 0
+            most_used[key] += len(val)
             most_used[key] += [True if key in val else False for val in
                     self.hashmax.values()].count(True)
 
+        # pokud jsou stejne value tak vypsat vsechny
+      #  if all[va for val in most_used.values()]
         max_used = max(most_used, key = lambda k : most_used[k])
         return (max_used,most_used[max_used])
 
-    #request for refactoing
-    def has_double_edges(self):
-        """
-        this is second task, this also shout be inserted into distribution.py
-        """
-        for x in self.matrix:
-            keys = [z for z in x.keys() if z in self.nodes]
-            for a,b in x.items():
-                if a in keys:
-                    if b['counting'] > 1:
-                        return True
-        return False
-
-    #request for refactoing
     def has_cycle(self):
 
-        def dfs(graph, start):
-            visited, stack = set(), [start]
-            while stack:
-                vertex = stack.pop()
-                if vertex not in visited:
-                    visited.add(vertex)
-                    stack.extend(graph[vertex] - visited)
-            return visited
-
-        graph = self.get_edges()
-        for k,v in graph:
-            if len(v) > 0:
-                if k in dfs(graph,k):
-                    return True
+        def dfs(graph, node, color, found_cycle):
+            if not found_cycle:
+                color[node] = "gray"
+                for vertex in graph[node]:
+                    if color[vertex] == "gray":
+                        found_cycle.append(True)
+                        return
+                    if color[vertex] == "white":
+                        dfs(graph,vertex, color, found_cycle)
+                color[node] = "black"
             else:
-                pass
+                return
 
+        color = {node : "white" for node in self.get_nodes()}
+        found_cycle = []
+        graph = self.hashmax.copy()
+        for node in self.get_nodes():
+            if color[node] == "white":
+                dfs(graph,node, color, found_cycle)
+            if found_cycle:
+                break
+        return found_cycle
+
+        """
+        start = self.get_nodes()[0]
+        visited, stack = [], [start]
+
+        while stack:
+            vertex = stack.pop()
+            visited.append(vertex)
+            for node in self.hashmax[vertex]:
+                if node in stack:
+                    return True
+                if node not in visited:
+                    stack.append(node)
         return False
+        """
 
     def is_biparted(self):
         """
         is_biparted nejdrive si vytvori dict uzlu s None barvou a pak si
         vytvor
+        d = {key: value for (key, value) in iterable}
         """
         colors = {x: None for x in self.get_nodes()}
-        #d = {key: value for (key, value) in iterable}
-
-        graph = self.get_edges()
+        start = self.get_nodes()[0]
         visited, queue = set(), [start]
         colors[start] = "cervena"
         while queue:
             vertex = queue.pop(0)
             if vertex not in visited:
                 visited.add(vertex)
-                queue.extend(graph[vertex] - visited)
-                for x in graph[vertex] - visited:
+                for vert in self.hashmax[vertex]:
+                        if vert not in visited:
+                            queue.append(vert)
+                for x in [node for node in self.get_nodes() if node not in
+                        visited]:
                     if colors[x] == colors[vertex]:
                         return False
                     colors[x] = "zelena" if colors[vertex] == "cerverna" else "cerverna"
@@ -221,21 +220,53 @@ class HMGraph:
         return colors
 
     def find_clique(self):
-        if not self.edges:
-            self.get_edges()
 
-        edges = {}
-        for node,edges in self.edges.items():
-            edges[node] = (edges,len(edges))
-        while not all(leng[0] == leng for leng in [ed[1] for ed in edges.values()]):
-            del_key = min([(ed,val) for ed,val in edges.times()],lambda x :
-                x[1])[0]
-            del edges[del_key]
-            for node,edges in self.edges.items():
-                new_edges = edges.remove(del_key)
-                edges[node] = (new_edges,len(new_edges))
+        def contin(edges):
+            counter = [count_edges[1] for count_edges in edges.values()]
+            return all([counter[0] == leng for leng in counter])
 
-        return (fin_node for fin_node in edges.keys())
+        def body(edited_hash):
+            counting_edges = {}
+            for vertex, edit_edge in edited_hash.items():
+                counting_edges[vertex] = (edit_edge[:],len(edit_edge))
+
+            while not contin(counting_edges):
+                del_key = min([(ed,val) for ed,val in
+                    counting_edges.items()],key = lambda x : x[1][1])[0]
+                #mazani vsech uzlu v klice
+                del counting_edges[del_key]
+                # oprava ostatnich poli
+                for node, edge in counting_edges.items():
+                    try:
+                        edge[0].remove(del_key)
+                        new_edge_list = edge[0]
+                    except ValueError:
+                        new_edge_list = edge[0]
+                    except AttributeError:
+                        new_edge_list = edge[0]
+                    counting_edges[node] = (new_edge_list,len(new_edge_list))
+
+            #vratim kliku,upraveny hash
+            clique = []
+            for cliq_node in counting_edges.keys():
+                del edited_hash[cliq_node]
+                for editing_key in edited_hash.keys():
+                    try:
+                        edited_hash[editing_key].remove(cliq_node)
+                    except ValueError:
+                        pass
+                    except AttributeError:
+                        pass
+                clique.append(cliq_node)
+
+            return (clique,edited_hash)
+
+        cliques = []
+        graph = self.hashmax.copy()
+        while graph:
+            (cli,graph) = body(graph)
+            cliques.append(cli)
+        return cliques
 
 class LinkedGraph:
     """
@@ -245,11 +276,23 @@ class LinkedGraph:
     pass
 
 if __name__ == "__main__":
-    test1 = HMGraph(['A','B','C'])
+    test1 = HMGraph(['A','B','C','D','E'])
     test1.insert_edge('A','B')
-    test1.insert_edge('B','C')
+    test1.insert_edge('B','A')
     test1.insert_edge('A','C')
+    test1.insert_edge('C','A')
+    test1.insert_edge('B','C')
+    test1.insert_edge('C','B')
+    test1.insert_edge('C','D')
+    test1.insert_edge('D','C')
+    test1.insert_edge('D','E')
+    test1.insert_edge('E','D')
     print("Nodes:",test1.get_nodes())
     print("Edges:",test1.get_edges())
-    print("Double edges:",test1.double_round)
     test1.print_hashMap()
+    print("Find most used:",test1.find_most_used_node())
+    print("Double edges:",test1.double_round)
+    start = test1.get_nodes()[0]
+    print("Has cycle:","Yes" if test1.has_cycle() else "No")
+    print("Is biparted:",test1.is_biparted())
+    print("Main clique: ",test1.find_clique())
