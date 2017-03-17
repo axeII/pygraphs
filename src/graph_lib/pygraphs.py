@@ -40,8 +40,6 @@ class HMGraph:
             """
             for spec_node in setup_nodes:
                 self.hashmax[spec_node.strip()] = []
-                #(HMGraph.create_node(spec_node,setup_nodes[spec_node],0))
-
 
     def add_node(self,name = "",edges = [], update = ()):
         if name and name not in self.hashmax.keys():
@@ -53,17 +51,21 @@ class HMGraph:
         if update:
             for up_node in update:
                 self.hashmax[up_node].append(name)
-            #update graph with new edges
-            #(HMGraph.create_node(int(len(self.matrix)+1),name,0))
+                """
+                update graph with new edges
+                """
 
     def remove_node(self,which = None):
+        """
+        there should be somthing done with else statement, what to do if which
+        is set?
+        """
         if which:
             del self.hashmax[which]
             for hash_list in self.hashmax.values():
                 hash_list.remove(which)
         else:
             pass
-            #if it's not set what to do?
 
     def insert_edge(self,node,target_edge):
         if target_edge in self.hashmax[node]:
@@ -92,13 +94,6 @@ class HMGraph:
             return nodes[specific]
 
     def get_edges(self):
-        """
-        for node in self.nodes:
-            new_edges = [y for y in [x.keys() for x in self.matrix] if y
-                    in self.nodes]
-            if not self.edges.get(node) or self.edges[node] != new_edges:
-                self.edges[node] = new_edges
-        """
         fin_edges = []
         for node,edges in self.hashmax.items():
             for edge in edges:
@@ -142,6 +137,8 @@ class HMGraph:
     def find_most_used_node(self):
         """
         this is first task this may be putting into distribution.py
+        if all values are same then output all of them
+        if all[va for val in most_used.values()]
         """
         most_used = {key: 0 for key in self.get_nodes()}
         for key,val in self.hashmax.items():
@@ -149,8 +146,6 @@ class HMGraph:
             most_used[key] += [True if key in val else False for val in
                     self.hashmax.values()].count(True)
 
-        # pokud jsou stejne value tak vypsat vsechny
-      #  if all[va for val in most_used.values()]
         max_used = max(most_used, key = lambda k : most_used[k])
         return (max_used,most_used[max_used])
 
@@ -180,6 +175,7 @@ class HMGraph:
         return found_cycle
 
         """
+        this works only on undirected graph
         start = self.get_nodes()[0]
         visited, stack = [], [start]
 
@@ -196,8 +192,8 @@ class HMGraph:
 
     def is_biparted(self):
         """
-        is_biparted nejdrive si vytvori dict uzlu s None barvou a pak si
-        vytvor
+        is_biparted fistly create dict of nodes with None color and then create
+        other...
         d = {key: value for (key, value) in iterable}
         """
         colors = {x: None for x in self.get_nodes()}
@@ -226,6 +222,10 @@ class HMGraph:
             return all([counter[0] == leng for leng in counter])
 
         def body(edited_hash):
+            """
+            body delet all nodes that are in clique, and others field then
+            return clique and updated hash table-dict
+            """
             counting_edges = {}
             for vertex, edit_edge in edited_hash.items():
                 counting_edges[vertex] = (edit_edge[:],len(edit_edge))
@@ -233,9 +233,7 @@ class HMGraph:
             while not contin(counting_edges):
                 del_key = min([(ed,val) for ed,val in
                     counting_edges.items()],key = lambda x : x[1][1])[0]
-                #mazani vsech uzlu v klice
                 del counting_edges[del_key]
-                # oprava ostatnich poli
                 for node, edge in counting_edges.items():
                     try:
                         edge[0].remove(del_key)
@@ -246,7 +244,6 @@ class HMGraph:
                         new_edge_list = edge[0]
                     counting_edges[node] = (new_edge_list,len(new_edge_list))
 
-            #vratim kliku,upraveny hash
             clique = []
             for cliq_node in counting_edges.keys():
                 del edited_hash[cliq_node]
@@ -267,13 +264,6 @@ class HMGraph:
             (cli,graph) = body(graph)
             cliques.append(cli)
         return cliques
-
-class LinkedGraph:
-    """
-    Implementace grafu pres ukazatele
-    """
-
-    pass
 
 if __name__ == "__main__":
     test1 = HMGraph(['A','B','C','D','E'])
