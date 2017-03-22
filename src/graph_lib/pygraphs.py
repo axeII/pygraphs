@@ -100,40 +100,6 @@ class HMGraph:
                 fin_edges.append((node,edge))
         return fin_edges
 
-    def insert_edges(self,data):
-        """
-        Depreciated!!
-        search_que = [(data[x],data[x+1]) for x in range(len(data)-1)]
-        operative = None
-        for search_name in search_que:
-            for element in self.matrix:
-                if element['node_name'] == search_name[0]:
-                    operative = element
-
-            if operative:
-                if search_name[1] not in operative.keys():
-
-                    celkem zbytecne kdyz je to klic ale muzu sem narvat
-                    dopravni prostredek napr misto repeat nazvu
-
-                    print(self.nodes)
-                    print("any",list(map(lambda x:x in
-                        operative.keys(),self.nodes)))
-                    if any(map(lambda x:x in operative.keys(),self.nodes)):
-                        print([x for x in operative.keys() if x in self.nodes])
-                        id_ = count([x for x in operative.keys() if x in self.nodes])
-                    else:
-                        id_ = 1
-
-                    operative[search_name[1]] = HMGraph.create_node(
-                            id_,search_name[1],1)
-                else:
-                    operative[search_name[1]]['counting'] += 1
-            else:
-                print('Error: No Node found')
-        """
-        pass
-
     def find_most_used_node(self):
         """
         this is first task this may be putting into distribution.py
