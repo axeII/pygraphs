@@ -36,7 +36,9 @@ def solve_with_graph(sol_data):
     for sol in sol_data:
         hm.insert_edge(sol[0],sol[1])
         hm.insert_edge(sol[1],sol[0])
-    hm.print_hashMap()
+    #hm.print_hashMap()
+
+    return hm.is_a_tree()
 
 def print_final(final_data):
     if final_data:
@@ -48,6 +50,6 @@ if __name__ == "__main__":
     try:
         data = parse_data(pyp.get_input_data(False))
         answer = solve_with_graph(data)
-        #print_final(cli)
+        print_final(answer)
     except KeyboardInterrupt:
         pass

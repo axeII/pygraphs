@@ -156,6 +156,28 @@ class HMGraph:
         return False
         """
 
+    def is_a_tree(self):
+        """
+        inicialization may look weird but it's all because new checker
+        anyway bfs for serach nodes if not foudn same node continue 
+        else end, if foudn nodes compare to inicial node if same 
+        return true
+        """
+        visited = stack = []
+        if self.get_nodes():
+            stack = [self.get_nodes()[0]]
+
+        while stack:
+            vertex = stack.pop(0)
+            visited.append(vertex)
+            for next_ in self.hashmax[vertex]:
+                if not next_ in visited:
+                    stack.append(next_)
+                else:
+                    return False
+
+        return True if visited == self.get_nodes() else False
+
     def is_biparted(self):
         """
         is_biparted fistly create dict of nodes with None color and then create
