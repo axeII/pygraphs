@@ -11,7 +11,7 @@ import pprint
 import collections
 
 """
-graph = { "a" : ["c"],
+graph = { "a" : [("c",4)],
           "b" : ["c", "e"],
           "c" : ["a", "b", "d", "e"],
           "d" : ["c"],
@@ -33,6 +33,7 @@ class HMGraph:
         self.hashmax = {}
         self.hashmax = collections.OrderedDict()
         self.double_round = False
+        self.edges_value = False
         if setup_nodes and isinstance(setup_nodes,list):
             """
             In case to use indexes as int use range(len(setup_nodes))
@@ -67,11 +68,22 @@ class HMGraph:
         else:
             pass
 
-    def insert_edge(self,node,target_edge):
-        if target_edge in self.hashmax[node]:
-            self.double_round = True
-        else:
-            self.hashmax[node].append(target_edge)
+    def insert_edge(self,node,target_edge,edge_val = None):
+        """
+        current dilema on graph structure - should be same architecture
+        with value as zeros like g : ('n',0) or have two architerues
+        """
+        if not self.edges_value:
+            if target_edge in self.hashmax[node]:
+                self.double_round = True
+            else:
+                self.hashmax[node].append(target_edge)
+
+        elif self.edges_value and edge_val:
+            if target_edge in map(lambda x:x[0], self.hashmax[node]):
+                self.double_round = True
+            else:
+                self.hashmax[node].append((target_edge,edge_val))
 
     def print_hashMap(self,level = None):
         """
@@ -202,6 +214,9 @@ class HMGraph:
                     colors[x] = "zelena" if colors[vertex] == "cerverna" else "cerverna"
 
         return colors
+
+    def find_graph_skeleton(self):
+        pass
 
     def find_clique(self):
 
