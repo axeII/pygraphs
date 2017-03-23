@@ -216,7 +216,16 @@ class HMGraph:
         return colors
 
     def find_graph_skeleton(self):
-        pass
+	"""
+	nasledujici kod nebude fungovat, predet to na kopii self.dict,
+	a na ten mazat postupne podle velikosti delky
+	az nebude mit zadny uzel, tak konec, vracim pole tuplu podle nazuhrany a velikosti
+        skel = {}
+	while not skel.keys()[:] == self.get_nodes:
+		max(self.)
+		skel[key] = (nodes,val)
+	"""
+	pass
 
     def find_clique(self):
 
