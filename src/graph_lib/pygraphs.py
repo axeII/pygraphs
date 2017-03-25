@@ -259,7 +259,6 @@ class HMGraph:
 
         return skeleton
 
-
     def find_clique(self):
 
         def contin(edges):
