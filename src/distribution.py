@@ -49,9 +49,9 @@ def print_final(final_data):
         print("nejvice navstevovany: %s %i" %
                 (final_data['place'],final_data['count']))
         print("existuje vice spojeni: %s" %
-                'ano' if final_data['connection'] else 'ne')
+                ('ano' if final_data['connection'] else 'ne'))
         print("zbozi zpet do skladu: %s" %
-                'ano' if final_data['warehouse'] else 'ne')
+                ('ano' if final_data['warehouse'] else 'ne'))
 
 if __name__ == "__main__":
     try:

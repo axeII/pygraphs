@@ -24,7 +24,7 @@ class HMGraph:
     Hash Matrix Graph implementation.
     """
 
-    def __init__(self,setup_nodes = []):
+    def __init__(self,setup_nodes = [], edges_with_val = False):
         """
         Maybe different library for for hashmax if to include order key inputs if
         needed in this data structure
@@ -33,7 +33,7 @@ class HMGraph:
         self.hashmax = {}
         self.hashmax = collections.OrderedDict()
         self.double_round = False
-        self.edges_value = False
+        self.edges_value = edges_with_val
         if setup_nodes and isinstance(setup_nodes,list):
             """
             In case to use indexes as int use range(len(setup_nodes))
@@ -193,7 +193,7 @@ class HMGraph:
     def is_biparted(self):
         """
         is_biparted fistly create dict of nodes with None color and then create
-        other...
+        other... not woking - fix it!
         d = {key: value for (key, value) in iterable}
         """
         colors = {x: None for x in self.get_nodes()}
@@ -216,7 +216,49 @@ class HMGraph:
         return colors
 
     def find_graph_skeleton(self):
-        pass
+        key = 0
+        min_ = 1000
+        key_edge = ()
+        skeleton = []
+        visited = set()
+        copy_graph = self.hashmax.copy()
+
+        if self.edges_value and self.hashmax:
+            while sorted(list(visited)) != self.get_nodes():
+                #print(sorted(list(visited)),self.get_nodes())
+                """
+                min_edge = min([(x,y) for x,y in copy_graph.items()],key = lambda x: x[1])
+                min_edge_reverse = (min_edge[1][0],min_edge[0])
+                map(lambda x: visited.add(x),[min_edge[0],min_edge[1][0]])
+                nedalo by se toto taky dat jenom na jeden radek
+                """
+                #print('0000000000000000000000000000000000000000')
+                for x,y in copy_graph.items():
+                #    print(x,y)
+                    if y:
+                        val = min(y,key = lambda b : b[1])[1]
+                        if val < min_:
+                            min_ = val
+                            key_edge = min(y,key = lambda b : b[1])
+                            key = x
+                if copy_graph[key]:
+                #    print('del1:',key,key_edge)
+                    copy_graph[key].remove(key_edge)
+                #print(copy_graph[key])
+                if copy_graph[key_edge[0]]:
+                #    print('del2:',key_edge[0],(key,key_edge[1]))
+                    copy_graph[key_edge[0]].remove((key,key_edge[1]))
+                #print(copy_graph[key_edge[0]])
+                skeleton.append((key,key_edge))
+                visited.add(key)
+                visited.add(key_edge[0])
+                #copy_graph[min_edge[0]].remove(min_edge[1])
+                #copy_graph[min_edge_reverse[0]].remove(min_edge_reverse[1])
+                #skeleton.append(min_edge)
+                min_ = 1000
+
+        return skeleton
+
 
     def find_clique(self):
 
