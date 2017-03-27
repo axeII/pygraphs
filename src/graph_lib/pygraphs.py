@@ -261,9 +261,9 @@ class HMGraph:
 
         return skeleton
 
-    def find_artuculation(self):
+    def find_articulation(self):
         answer = {}
-        self.print_hashMap()
+        #self.print_hashMap()
         for node in self.get_nodes():
             #print(node)
             copy_graph = {}
@@ -293,8 +293,42 @@ class HMGraph:
             answer[node] = True if sorted(visited) == edited else False
         return answer
 
-    def find_bridge(self):
-        pass
+    def find_bridge(self,articulations):
+        if articulations:
+            bridges = {}
+            for key, val in articulations.items():
+                respond = {}
+                if not val:
+                    for next_node in self.hashmax[key]:
+                        #print('000000000000000000000000000000')
+                        #print(next_node)
+                        #print('000000000000000000000000000000')
+                        copy_graph = {}
+                        for node_, edge in self.hashmax.items():
+                            copy_graph[node_] = edge[:]
+                        copy_graph[key].remove(next_node)
+                        copy_graph[next_node].remove(key)
+                        #for k,v in copy_graph.items():
+                        #    print(k,': ',v)
+                        """
+                        go through whole graph and find out if there is another
+                        complete
+                        """
+                        visited = []
+                        stack = [random.choice(list(copy_graph.keys()))]
+                        while stack:
+                            vertex = stack.pop()
+                            if vertex not in visited:
+                                visited.append(vertex)
+                            for next_ in copy_graph[vertex]:
+                                if next_ not in visited:
+                                    stack.append(next_)
+
+                        respond[next_node] = True if sorted(visited) == self.get_nodes() else False
+                    bridges[key] = respond
+            return bridges
+        else:
+            return "Error: No input articulations"
 
     def find_clique(self):
 

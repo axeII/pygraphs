@@ -41,18 +41,20 @@ def solve_with_graph(sol_data):
         hm.insert_edge(sol[0][1],sol[0][0])
     #hm.print_hashMap()
 
-    print(hm.find_artuculation())
-    return None
+    return hm.find_bridge(hm.find_articulation())
 
 def print_final(final_data):
-    for data in final_data:
-        print('%s - %s: %s' %(data[0],data[1][0],data[1][1]))
-    print('Hodnoceni:',sum([x[1][1] for x in final_data]))
+    if final_data and isinstance(final_data,dict):
+        for key, val in final_data.items():
+            for edge, value in val.items():
+                if not value:
+                    print('%s - %s' % (key,edge))
+            print(key)
 
 if __name__ == "__main__":
     try:
         data = parse_data(pyp.get_input_data(False))
         answer = solve_with_graph(data)
-        #print_final(answer)
+        print_final(answer)
     except KeyboardInterrupt:
         pass
