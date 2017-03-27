@@ -7,7 +7,9 @@ __author__ = 'Ales Lerch'
 
 import os
 import sys
+import math
 import pprint
+import random
 import collections
 
 """
@@ -217,7 +219,7 @@ class HMGraph:
 
     def find_graph_skeleton(self):
         key = 0
-        min_ = 1000
+        min_ = math.inf
         key_edge = ()
         skeleton = []
         visited = set()
@@ -255,9 +257,44 @@ class HMGraph:
                 #copy_graph[min_edge[0]].remove(min_edge[1])
                 #copy_graph[min_edge_reverse[0]].remove(min_edge_reverse[1])
                 #skeleton.append(min_edge)
-                min_ = 1000
+                min_ = math.inf
 
         return skeleton
+
+    def find_artuculation(self):
+        answer = {}
+        self.print_hashMap()
+        for node in self.get_nodes():
+            #print(node)
+            copy_graph = {}
+            for node_, edge in self.hashmax.items():
+                copy_graph[node_] = edge[:]
+            del copy_graph[node]
+            for edge in copy_graph.values():
+                try:
+                    edge.remove(node)
+                except ValueError:
+                    pass
+            visited = []
+            stack = [random.choice(list(copy_graph.keys()))]
+            #print('start:',stack[0])
+            while stack:
+                vertex = stack.pop()
+                if vertex not in visited:
+                    visited.append(vertex)
+                for next_ in copy_graph[vertex]:
+                    if next_ not in visited:
+                        stack.append(next_)
+
+            edited = self.get_nodes()
+            edited.remove(node)
+            #print('run:',edited,sorted(visited))
+            #print([(k,v) for k,v in copy_graph.items()])
+            answer[node] = True if sorted(visited) == edited else False
+        return answer
+
+    def find_bridge(self):
+        pass
 
     def find_clique(self):
 
