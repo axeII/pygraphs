@@ -1,7 +1,0 @@
-Viden, Brno_01, Brno_02, Praha, Ostrava, Berlin
-auto_01: Viden > Brno_01 > Brno_02 > Ostrava
-auto_02: Praha > Ostrava > Berlin
-letadlo_01: Viden > Brno_01 > Praha
-vlak_a: Praha > Brno_02
-auto_03: Brno_01 > Praha > Berlin
-lod_01: Praha > Berlin
