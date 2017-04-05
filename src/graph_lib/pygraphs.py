@@ -87,7 +87,7 @@ class HMGraph:
             else:
                 self.hashmax[node].append((target_edge,edge_val))
 
-    def print_hashMap(self,level = None):
+    def print_hashMap(self, sorted_ = False, level = None):
         """
         Currently just pretty print.
         """
@@ -96,8 +96,12 @@ class HMGraph:
             pprint.pprint(self.hashmax,width=level)
         else:
             print('{')
-            for key,val in self.hashmax.items():
-                print('  \"%s\" : %s' % (key,val))
+            if sorted_:
+                for key,val in sorted(self.hashmax.items(), key=lambda x:x[0]):
+                    print('  \"%s\" : %s' % (key,sorted(val,key=lambda x:x[0])))
+            else:
+                for key,val in self.hashmax.items():
+                    print('  \"%s\" : %s' % (key,val))
             print('}')
 
     def get_nodes(self,specific = None):
@@ -331,6 +335,50 @@ class HMGraph:
         else:
             return "Error something went wrong"
 
+    """
+    this methond is commented due to killing cpu
+    """
+    def travelling_salesman(self):
+        salesman = {}
+        travel = []
+        for key in sorted(self.hashmax.keys()):
+            salesman[key] = sorted(self.hashmax[key][:], key = lambda x : x[0])
+
+        while salesman:
+            for row in sorted(salesman.keys()):
+                min_ = min(salesman[row],key = lambda x: x[1])
+                print(row,salesman[row],min_)
+                for column in salesman[row]:
+                    column = (column[0],column[1] - min_[1])
+                    print(column)
+
+            zeros = {}
+            for key, row in salesman.items():
+                for column in row:
+                    if column[1] == 0:
+                        min_row = min(row, key = lambda x: x[1])
+                        min_column = min([x[x.index(column[0])]
+                            for x in salesman.values()],key = lambda x: x[1])
+                        zeros[(key,val)] = min_row[1] + min_column[1]
+
+            if zeros:
+                sigma = max(zeros.items(),key = lambda x: x[1])
+                del salesman[sigma[0]]
+                for key, val in salesman.items():
+                    val.remove(sigma[1])
+            break
+
+    def floyd_warshall(self):
+        floyd = {}
+        theta = len(self.get_nodes())
+        for key, val in sorted(self.hashmax.items(),key=lambda x: x[1]):
+            floyd[key] = sorted(val[:], key = lambda x : x[0])
+
+        for k in floyd.keys():
+            for i in range(0, theta):
+                for j in range(0, theta):
+                    floyd[i][j] = min(floyd[i][j], floyd[i][k] + floyd[k][j])
+
     def find_clique(self):
 
         def contin(edges):
@@ -394,5 +442,4 @@ if __name__ == "__main__":
     print("Nodes:",test1.get_nodes())
     print("Edges:",test1.get_edges())
     test1.print_hashMap()
-    for a,b in test1.djikstra('A').items():
-        print(a,b)
+    #test1.travelling_salesman()
