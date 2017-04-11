@@ -30,28 +30,28 @@ D: A(-4)
 
 def parse_data(data):
     parsed_teams = []
+    special = []
     for line in data:
         node, edges = line.split(':')
+        special.append(node)
         node = node[0]
         edges = [(e.strip()[0],int(re.findall(r'-?\d+',e)[0])) for e in edges.split(',')]
         parsed_teams.append((node,edges))
 
-    return parsed_teams
+    return (parsed_teams,special)
 
-def solve_with_graph(sol_data):
-    nodes = set()
-    for solve in sol_data:
-        nodes.add(solve[0])
-    hm = pyg.HMGraph(list(nodes),True)
-    for sol in sol_data:
-        for edg in sol[1]:
-            hm.insert_edge(sol[0],edg[0],edg[1])
-    for sol in sol_data:
-        for edg in sol[1]:
-            if (edg[0],(sol[0],edg[1])) not in hm.get_edges():
-                hm.insert_edge(edg[0],sol[0],float("-inf"))
-    hm.print_hashMap(sorted_=True)
-    hm.floyd_warshall()
+def solve_with_graph(sol_data, special_nodes):
+    if sol_data:
+        nodes = set()
+        for solve in sol_data:
+            nodes.add(solve[0])
+        hm = pyg.HMGraph(list(nodes),True)
+        for sol in sol_data:
+            for edg in sol[1]:
+                hm.insert_edge(sol[0],edg[0],edg[1])
+        hm.print_hashMap(sorted_ = True)
+        #hm.cpm_long(sol_data[0][0],list(filter(lambda x:len(x)>1,list(nodes))))
+        hm.cpm_long(sol_data[0][0],special_nodes)
 
     return None
 
@@ -61,8 +61,8 @@ def print_final(final_data):
 
 if __name__ == "__main__":
     try:
-        data = parse_data(pyp.get_input_data(False))
-        answer = solve_with_graph(data)
+        data,s_nodes = parse_data(pyp.get_input_data(False))
+        answer = solve_with_graph(data, s_nodes)
         #print_final(answer)
     except KeyboardInterrupt:
         pass
