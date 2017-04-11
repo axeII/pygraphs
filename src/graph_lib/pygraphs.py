@@ -337,47 +337,71 @@ class HMGraph:
 
     """
     this methond is commented due to killing cpu
+    1)Vytvorim graf na cyklu,2)Odecist z radku min, 3)Kde je nula tam je phi,4) Najit
+    nejvetsi phi,5) Tvrit hranu do grafu,6) Smazat hranu z matice, 7) Vytvorit opacne
+    inf, 8) konec self.max.nodes == new graf nodes
     """
     def travelling_salesman(self):
         salesman = {}
-        travel = []
+        travel = HMGraph(self.get_nodes())
         for key in sorted(self.hashmax.keys()):
             salesman[key] = sorted(self.hashmax[key][:], key = lambda x : x[0])
 
-        while salesman:
+        while len(salesman.keys()) > 1:#not all(travel.hashmax.values()):some node is empty of graph
             for row in sorted(salesman.keys()):
                 min_ = min(salesman[row],key = lambda x: x[1])
-                print(row,salesman[row],min_)
-                for column in salesman[row]:
-                    column = (column[0],column[1] - min_[1])
-                    print(column)
-
+                coa = [col for col in salesman[row] if col[1] != math.inf]
+                if len([col for col in salesman[row] if col[1] != math.inf]) >= 2:
+                    new_row = []
+                    for column in salesman[row]:
+                        new_row.append((column[0],column[1] - min_[1]))
+                    salesman[row] = new_row
+            """
+            jeste bych mel dodelat vertikalni nuly vsude
+            """
             zeros = {}
             for key, row in salesman.items():
                 for column in row:
                     if column[1] == 0:
-                        min_row = min(row, key = lambda x: x[1])
-                        min_column = min([x[x.index(column[0])]
-                            for x in salesman.values()],key = lambda x: x[1])
-                        zeros[(key,val)] = min_row[1] + min_column[1]
+                        min_row = min([r for r in row if r != column], key = lambda x: x[1])
+                        min_column = [[(r[0],r[1]) for r in row_ if r[0] ==
+                            column[0] and row != row_] for row_ in salesman.values()]
+                        min_column = min([min_[0] for min_ in min_column if min_],key=lambda x:x[1])
+                        zeros[(key,column[0])] = min_row[1] + min_column[1]
 
             if zeros:
-                sigma = max(zeros.items(),key = lambda x: x[1])
-                del salesman[sigma[0]]
+                sigma = max(sorted(zeros.items(),key=lambda x:x[0]),key=lambda x: x[1])
+                travel.insert_edge(sigma[0][0],sigma[0][1])
+                del salesman[sigma[0][0]]
                 for key, val in salesman.items():
-                    val.remove(sigma[1])
-            break
+                    salesman[key] = [(v[0],float("inf")) if key == sigma[0][1] and v[0] ==
+                            sigma[0][0] else v for v in val if v[0] != sigma[0][1]]
+        return travel
 
     def floyd_warshall(self):
         floyd = {}
         theta = len(self.get_nodes())
         for key, val in sorted(self.hashmax.items(),key=lambda x: x[1]):
             floyd[key] = sorted(val[:], key = lambda x : x[0])
+            floyd[key].append((key,0))
 
-        for k in floyd.keys():
+        matrix = []
+        for key, val in sorted(floyd.items(), key=lambda x: x[0]):
+            matrix.append([s[1] for s in sorted(val, key = lambda x : x[0])])
+
+        for k in range(0, theta):
             for i in range(0, theta):
                 for j in range(0, theta):
-                    floyd[i][j] = min(floyd[i][j], floyd[i][k] + floyd[k][j])
+                    matrix[i][j] = max(matrix[i][j], matrix[i][k] + matrix[k][j])
+
+        for k in range(0, theta):
+            for i in range(0, theta):
+                for j in range(0, theta):
+                    if (matrix[i][k] + matrix[k][j] < matrix[i][j]):
+                        matrix[i][j] = float("-inf")
+
+    def cpm_long(self):
+        pass
 
     def find_clique(self):
 

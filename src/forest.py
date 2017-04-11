@@ -31,7 +31,6 @@ def parse_data(data):
     return parsed_teams
 
 def solve_with_graph(sol_data):
-    print(sol_data)
     nodes = set()
     for solve in sol_data:
         for node in solve[0]:
@@ -40,20 +39,40 @@ def solve_with_graph(sol_data):
     for sol in sol_data:
         hm.insert_edge(sol[0][0],sol[0][1],int(sol[1]))
         hm.insert_edge(sol[0][1],sol[0][0],int(sol[1]))
-    hm.print_hashMap(sorted_=True)
-    print(hm.travelling_salesman())
+    #hm.print_hashMap(sorted_=True)
 
-    return None
+    return (hm.travelling_salesman().get_edges(),hm.get_edges())
 
-def print_final(final_data):
-    print(final_data)
-    for k_data, v_data in sorted(final_data.items(), key = lambda x: x[1][1]):
-        print('%s: %s' %(k_data,v_data[1]))
+def print_final(final_data,graph_data):
 
+    def getNum(data_,search_data):
+        data = data_.split('-')
+        accumulator = 0
+        for d in range(len(data)-1):
+            find = [dat for dat in search_data if dat[0] == data[d] and
+                    dat[1][0] == data[d+1]][0]
+            accumulator += find[1][1]
+        return accumulator
+
+    if final_data and graph_data:
+            check_data = final_data[:]
+            vertex = check_data.pop(0)
+            graph = "%s-%s" % (vertex[0],vertex[1])
+            while check_data:
+                for vert in check_data:
+                    if vert[0] == graph[-1]:
+                        graph+= "-%s" % vert[1]
+                        check_data.remove(vert)
+                    elif vert[1] == graph[0]:
+                        graph = "%s-%s" % (vert[0],graph)
+                        check_data.remove(vert)
+                    else:
+                        continue
+            print(graph,getNum(graph,graph_data))
 if __name__ == "__main__":
     try:
-        data = parse_data(pyp.get_input_data(False))
-        answer = solve_with_graph(data)
-        #print_final(answer)
+            data = parse_data(pyp.get_input_data(False))
+            answer, numbers = solve_with_graph(data)
+            print_final(answer,numbers)
     except KeyboardInterrupt:
         pass
