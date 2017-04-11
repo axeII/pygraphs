@@ -403,13 +403,16 @@ class HMGraph:
     def cpm_long(self,first_node,special_node):
         cpm_nodes = {x: (None,0) for x in self.get_nodes()}
         for s in special_node:
-            cpm_nodes[s] = (None,1)
+            cpm_nodes[s[0]] = (None,1)
 
         for key, val in sorted(self.hashmax.items(),key=lambda x: x[0]):
             for v in val:
                 #tady je bug nema tam byt cilso ale tuple
-                print(cpm_nodes[v[0]][1],v[1])
-                cpm_nodes[v[0]] = max(cpm_nodes[v[0]][1],v[1])
+                print(key,cpm_nodes[v[0]],v,v[1],cpm_nodes[v[0]][1],cpm_nodes[key][1])
+                cpm_nodes[v[0]] = max(cpm_nodes[v[0]],
+                        (key,v[1]+cpm_nodes[v[0]][1]+cpm_nodes[key][1]),
+                        key=lambda x:x[1])
+            print(cpm_nodes)
         print(cpm_nodes)
 
     def find_clique(self):

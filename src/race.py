@@ -33,7 +33,8 @@ def parse_data(data):
     special = []
     for line in data:
         node, edges = line.split(':')
-        special.append(node)
+        if len(node) > 1:
+            special.append(node)
         node = node[0]
         edges = [(e.strip()[0],int(re.findall(r'-?\d+',e)[0])) for e in edges.split(',')]
         parsed_teams.append((node,edges))
