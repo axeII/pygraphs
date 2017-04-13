@@ -379,6 +379,11 @@ class HMGraph:
         return travel
 
     def floyd_warshall(self):
+        """
+        classic floyd warshall implemetation in python, has table transforms to
+        matrix in which is dound statisitc nimber, those number are used in
+        floy warhall algorithm, this algortim finds if there is negative cycle
+        """
         floyd = {}
         theta = len(self.get_nodes())
         for key, val in sorted(self.hashmax.items(),key=lambda x: x[1]):
@@ -401,6 +406,11 @@ class HMGraph:
                         matrix[i][j] = float("-inf")
 
     def cpm_long(self,first_node,s_nodes):
+        """
+        this algirithm is similar to critial path method, only uses main part
+        of this algortihm, find the biggest way where higer number of edge in
+        node is better
+        """
         cpm_nodes = {x: (None,0,0) for x in self.get_nodes()}
         for spec in s_nodes:
             cpm_nodes[spec[0]] = (None,0,1)
@@ -410,8 +420,6 @@ class HMGraph:
                 cpm_nodes[v[0]] = max(cpm_nodes[v[0]],
                         (key,v[1]+cpm_nodes[key][1]+cpm_nodes[v[0]][2],cpm_nodes[v[0]][2]),key=lambda x:x[1])
 
-        #cpm_nodes[first_node] = (first_node,0)
-        #return sorted(cpm_nodes.items(),key=lambda x:(x[1][0],x[0]))
         return cpm_nodes
 
     def find_clique(self):
