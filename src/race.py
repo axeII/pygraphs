@@ -48,18 +48,26 @@ def solve_with_graph(sol_data, special_nodes):
             nodes.add(solve[0])
         hm = pyg.HMGraph(list(nodes),True)
         for sol in sol_data:
-            if sol[0] in list(map(lambda x:x[0],special_nodes)):
-                hm.insert_edge(sol[0],sol[0],1)
+            #if sol[0] in list(map(lambda x:x[0],special_nodes)):
+            #    hm.insert_edge(sol[0],sol[0],1)
             for edg in sol[1]:
                 hm.insert_edge(sol[0],edg[0],edg[1])
         #hm.print_hashMap(sorted_ = True)
         #hm.cpm_long(sol_data[0][0],list(filter(lambda x:len(x)>1,list(nodes))))
 
-        return hm.cpm_long(sol_data[0][0])
+        return hm.cpm_long(sol_data[0][0],special_nodes)
 
 def print_final(final_data):
+    path = []
+    first = list(filter(lambda x: x[1][0] == None, final_data.items()))[0]
+    path.append(first[0])
     if final_data:
-        print("-".join([fd[0] for fd in final_data]),":",final_data[-1][1][1])
+        while not len(path) == len(final_data.keys()):
+            first = list(filter(lambda x: x[1][0] ==
+                first[0],final_data.items()))[0]
+            path.append(first[0])
+            #print("-".join([fd[0] for fd in final_data]),":",final_data[-1][1][1])
+    print("-".join(path),final_data[path[-1]][1])
 
 if __name__ == "__main__":
     try:

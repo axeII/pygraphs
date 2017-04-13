@@ -400,15 +400,19 @@ class HMGraph:
                     if (matrix[i][k] + matrix[k][j] < matrix[i][j]):
                         matrix[i][j] = float("-inf")
 
-    def cpm_long(self,first_node):
-        cpm_nodes = {x: (None,0) for x in self.get_nodes()}
+    def cpm_long(self,first_node,s_nodes):
+        cpm_nodes = {x: (None,0,0) for x in self.get_nodes()}
+        for spec in s_nodes:
+            cpm_nodes[spec[0]] = (None,0,1)
 
         for key, val in sorted(self.hashmax.items(),key=lambda x: x[0]):
             for v in val:
                 cpm_nodes[v[0]] = max(cpm_nodes[v[0]],
-                        (key,v[1]+cpm_nodes[key][1]),key=lambda x:x[1])
+                        (key,v[1]+cpm_nodes[key][1]+cpm_nodes[v[0]][2],cpm_nodes[v[0]][2]),key=lambda x:x[1])
 
-        return sorted(cpm_nodes.items(),key=lambda x:x[0])
+        #cpm_nodes[first_node] = (first_node,0)
+        #return sorted(cpm_nodes.items(),key=lambda x:(x[1][0],x[0]))
+        return cpm_nodes
 
     def find_clique(self):
 
