@@ -63,7 +63,7 @@ def print_final(final_data):
             first = list(filter(lambda x: x[1][0] ==
                 first[0],final_data.items()))[0]
             path.append(first[0])
-    print("-".join(path),final_data[path[-1]][1])
+    print(" - ".join(path),":",final_data[path[-1]][1])
 
 if __name__ == "__main__":
     try:

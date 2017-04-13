@@ -46,7 +46,7 @@ def solve_with_graph(sol_data):
 def print_final(final_data,graph_data):
 
     def getNum(data_,search_data):
-        data = data_.split('-')
+        data = [d.strip() for d in data_.split('-')]
         accumulator = 0
         for d in range(len(data)-1):
             find = [dat for dat in search_data if dat[0] == data[d] and
@@ -57,18 +57,19 @@ def print_final(final_data,graph_data):
     if final_data and graph_data:
             check_data = final_data[:]
             vertex = check_data.pop(0)
-            graph = "%s-%s" % (vertex[0],vertex[1])
+            graph = "%s - %s" % (vertex[0],vertex[1])
             while check_data:
                 for vert in check_data:
                     if vert[0] == graph[-1]:
-                        graph+= "-%s" % vert[1]
+                        graph+= " - %s" % vert[1]
                         check_data.remove(vert)
                     elif vert[1] == graph[0]:
-                        graph = "%s-%s" % (vert[0],graph)
+                        graph = "%s - %s" % (vert[0],graph)
                         check_data.remove(vert)
                     else:
                         continue
-            print(graph,getNum(graph,graph_data))
+            print(graph,":",getNum(graph,graph_data))
+
 if __name__ == "__main__":
     try:
             data = parse_data(pyp.get_input_data(False))
