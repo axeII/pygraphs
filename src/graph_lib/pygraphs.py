@@ -154,9 +154,9 @@ class HMGraph:
         for node in self.get_nodes():
             if color[node] == "white":
                 dfs(graph,node, color, found_cycle)
-            if found_cycle:
+            if found_cycle[0]:
                 break
-        return found_cycle
+        return found_cycle[0]
 
         """
         this works only on undirected graph
@@ -173,6 +173,21 @@ class HMGraph:
                     stack.append(node)
         return False
         """
+
+    def has_cycle_undericted(self):
+        start = self.get_nodes()[0]
+        visited, stack = [], [start]
+
+        while stack:
+            vertex = stack.pop()
+            visited.append(vertex)
+            for node in self.hashmax[vertex]:
+                if node in stack:
+                    return True
+                if node not in visited:
+                    stack.append(node)
+        return False
+
 
     def is_united(self):
         visited, stack = [], [random.choice(list(self.hashmax.keys()))]
@@ -192,10 +207,10 @@ class HMGraph:
         inicialization may look weird but it's all because new checker
         """
 
-        has_cycle = self.has_cycle()
+        has_cycle = self.has_cycle_undericted()
         is_united = self.is_united()
 
-        return True if not has_cycle[0] and is_united else False
+        return True if not has_cycle and is_united else False
 
     def is_biparted(self):
         """

@@ -46,7 +46,6 @@ def solve_with_graph(sol_data):
 def print_final(final_data):
     for data in final_data:
         field = sorted([data[0],data[1][0]])
-        print(field)
         print('%s - %s: %s' %(field[0],field[1],data[1][1]))
     print('Hodnoceni:',sum([x[1][1] for x in final_data]))
 
