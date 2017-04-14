@@ -7,7 +7,6 @@ __author__ = 'Ales Lerch'
 
 import os
 import sys
-import math
 import pprint
 import random
 import collections
@@ -239,7 +238,7 @@ class HMGraph:
 
     def find_graph_skeleton(self):
         key = 0
-        min_ = math.inf
+        min_ = float("inf")
         key_edge = ()
         skeleton = []
         visited = set()
@@ -267,7 +266,7 @@ class HMGraph:
                 skeleton.append((key,key_edge))
                 visited.add(key)
                 visited.add(key_edge[0])
-                min_ = math.inf
+                min_ = float("inf")
 
         return skeleton
 
@@ -333,7 +332,7 @@ class HMGraph:
 
     def djikstra(self,first,number = 0):
         if self.edges_value and first:
-            djisktra = {x: [None,math.inf] for x in self.get_nodes() if x != first}
+            djisktra = {x: [None,float("inf")] for x in self.get_nodes() if x != first}
             djisktra[first] = [None,0]
             stack, visited = [(first,0)], []
             while number <= len(self.get_nodes()) and stack:
@@ -366,8 +365,8 @@ class HMGraph:
         while len(salesman.keys()) > 1:#not all(travel.hashmax.values()):some node is empty of graph
             for row in sorted(salesman.keys()):
                 min_ = min(salesman[row],key = lambda x: x[1])
-                coa = [col for col in salesman[row] if col[1] != math.inf]
-                if len([col for col in salesman[row] if col[1] != math.inf]) >= 2:
+                coa = [col for col in salesman[row] if col[1] != float("inf")]
+                if len([col for col in salesman[row] if col[1] != float("inf")]) >= 2:
                     new_row = []
                     for column in salesman[row]:
                         new_row.append((column[0],column[1] - min_[1]))
