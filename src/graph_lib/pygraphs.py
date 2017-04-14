@@ -174,27 +174,28 @@ class HMGraph:
         return False
         """
 
+    def is_united(self):
+        visited, stack = [], [random.choice(list(self.hashmax.keys()))]
+        while stack:
+            vertex = stack.pop()
+            if vertex not in visited:
+                visited.append(vertex)
+            for next_ in self.hashmax[vertex]:
+                if next_ not in visited:
+                    stack.append(next_)
+        return True if sorted(visited) == sorted(list(self.hashmax.keys())) else False
+
     def is_a_tree(self):
         """
+        simple code that call two system methods to check abilit tree graph
+        that is if it has no cycle and is united
         inicialization may look weird but it's all because new checker
-        anyway bfs for serach nodes if not foudn same node continue 
-        else end, if foudn nodes compare to inicial node if same 
-        return true
         """
-        visited = stack = []
-        if self.get_nodes():
-            stack = [self.get_nodes()[0]]
 
-        while stack:
-            vertex = stack.pop(0)
-            visited.append(vertex)
-            for next_ in self.hashmax[vertex]:
-                if not next_ in visited:
-                    stack.append(next_)
-                else:
-                    return False
+        has_cycle = self.has_cycle()
+        is_united = self.is_united()
 
-        return True if visited == self.get_nodes() else False
+        return True if not has_cycle[0] and is_united else False
 
     def is_biparted(self):
         """
