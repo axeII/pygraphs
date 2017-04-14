@@ -40,7 +40,8 @@ def solve_with_graph(sol_data):
         hm.insert_edge(sol[0][0],sol[0][1])
         hm.insert_edge(sol[0][1],sol[0][0])
     #hm.print_hashMap()
-
+    if not hm.is_united():
+        sys.exit(0)
     return hm.find_bridge(hm.find_articulation())
 
 def print_final(final_data):
