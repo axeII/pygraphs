@@ -1,6 +1,7 @@
 """ Pygraphs
 
 Graph library, this file should be splitted when goes bigger.
+split into classes over inheritance
 """
 
 __author__ = 'Ales Lerch'
@@ -156,22 +157,6 @@ class HMGraph:
             if found_cycle[0]:
                 break
         return found_cycle[0]
-
-        """
-        this works only on undirected graph
-        start = self.get_nodes()[0]
-        visited, stack = [], [start]
-
-        while stack:
-            vertex = stack.pop()
-            visited.append(vertex)
-            for node in self.hashmax[vertex]:
-                if node in stack:
-                    return True
-                if node not in visited:
-                    stack.append(node)
-        return False
-        """
 
     def has_cycle_undericted(self):
         start = self.get_nodes()[0]
