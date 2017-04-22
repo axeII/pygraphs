@@ -34,19 +34,21 @@ def parse_data(data):
 def solve_with_graph(sol_data):
     if sol_data:
         hm = pyg.HMGraph([sol.strip() for sol in sol_data[0]])
-        for team in sol_data[1]:
-            for dat in [(team[x],team[x+1]) for x in range(len(team)-1)]:
-                hm.insert_edge(dat[0],dat[1])
-                hm.insert_edge(dat[1],dat[0])
-        hm.print_hashMap()
+        if hm:
+            for team in sol_data[1]:
+                for dat in [(team[x],team[x+1]) for x in range(len(team)-1)]:
+                    hm.insert_edge(dat[0],dat[1])
+                    hm.insert_edge(dat[1],dat[0])
+            #hm.print_hashMap()
+        return hm.coloring_grups()
     return None
 
 def print_final(final_data):
     if final_data:
-        for nodes in final_data:
-            print(nodes)
+        for val in final_data.values():
+            print(', '.join(val))
     else:
-        print("Nelze rozdelit.")
+        print("Tento graf neni mozne rozdenil na skupiny")
 
 if __name__ == "__main__":
     try:

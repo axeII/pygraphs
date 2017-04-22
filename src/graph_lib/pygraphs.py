@@ -418,9 +418,47 @@ class HMGraph:
         for key, val in sorted(self.hashmax.items(),key=lambda x: x[0]):
             for v in val:
                 cpm_nodes[v[0]] = max(cpm_nodes[v[0]],
-                        (key,v[1]+cpm_nodes[key][1]+cpm_nodes[v[0]][2],cpm_nodes[v[0]][2]),key=lambda x:x[1])
+                        (key,v[1]+cpm_nodes[key][1]+cpm_nodes[v[0]][2],cpm_nodes[v[0]][2]),
+                        key=lambda x:x[1])
 
         return cpm_nodes
+
+    def coloring_grups(self):
+        if len(self.get_nodes()) > 3:
+            max_grups = len(self.get_nodes()) // 2
+            grups = {}
+            for a in range(max_grups):
+                grups["grup_n%s" % a] = []
+            start = self.get_nodes()[0]
+            visited, stack = [], [start]
+            while stack:
+                vertex = stack.pop(0)
+                visited.append(vertex)
+                found_colors = []
+                for neighbor in self.hashmax[vertex]:
+                    if neighbor not in visited and neighbor not in stack:
+                        stack.append(neighbor)
+                    try:
+                        found_colors.append(list(filter(lambda x: neighbor in x[1],
+                            [(grup_color,nodes) for grup_color,nodes in grups.items()]))[0][0])
+                    except (IndexError,AttributeError):
+                        pass
+                """
+                Test if there are any free colors to take, if not end algorithm
+                with None
+                """
+                if set(found_colors) == set(grups.keys()):
+                    return None
+                if not found_colors:
+                    found_colors = list(grups.keys())[:]
+                else:
+                    found_colors = list(set(grups.keys()) - set(found_colors))
+                found = min([(grp,len(grups[grp])) for grp in found_colors],
+                        key = lambda x: x[1])
+                grups[found[0]].append(vertex)
+            return grups
+        else:
+            return None
 
     def find_clique(self):
 
