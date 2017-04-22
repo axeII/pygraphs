@@ -40,7 +40,14 @@ def solve_with_graph(sol_data):
                     hm.insert_edge(dat[0],dat[1])
                     hm.insert_edge(dat[1],dat[0])
             #hm.print_hashMap()
-        return hm.coloring_grups()
+        max_grups = len(hm.get_nodes()) // 2
+        default = better = hm.coloring_grups(max_grups)
+        while better:
+            better = hm.coloring_grups(max_grups-1)
+        if better:
+            return better
+        else:
+            return default
     return None
 
 def print_final(final_data):

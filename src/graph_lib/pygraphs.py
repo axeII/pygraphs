@@ -423,9 +423,8 @@ class HMGraph:
 
         return cpm_nodes
 
-    def coloring_grups(self):
+    def coloring_grups(self,max_grups):
         if len(self.get_nodes()) > 3:
-            max_grups = len(self.get_nodes()) // 2
             grups = {}
             for a in range(max_grups):
                 grups["grup_n%s" % a] = []
