@@ -9,6 +9,7 @@ __author__ = 'Ales Lerch'
 import os
 import sys
 import pprint
+import copy
 import random
 import collections
 
@@ -26,7 +27,8 @@ class HMGraph:
     Hash Matrix Graph implementation.
     """
 
-    def __init__(self,setup_nodes = [], edges_with_val = False):
+    def __init__(self,setup_nodes = [], edges_with_val = False, first_node =
+            None):
         """
         Maybe different library for for hashmax if to include order key inputs if
         needed in this data structure
@@ -36,6 +38,7 @@ class HMGraph:
         self.hashmax = collections.OrderedDict()
         self.double_round = False
         self.edges_value = edges_with_val
+        self.first_node = first_node
         if setup_nodes and isinstance(setup_nodes,list):
             """
             In case to use indexes as int use range(len(setup_nodes))
@@ -70,7 +73,7 @@ class HMGraph:
         else:
             pass
 
-    def insert_edge(self,node,target_edge,edge_val = None):
+    def insert_edge(self,node,target_edge,edge_val = None,name_val = None):
         """
         current dilema on graph structure - should be same architecture
         with value as zeros like g : ('n',0) or have two architerues
@@ -81,11 +84,18 @@ class HMGraph:
             else:
                 self.hashmax[node].append(target_edge)
 
-        elif self.edges_value and edge_val:
+        elif self.edges_value and edge_val and not name_val:
             if target_edge in map(lambda x:x[0], self.hashmax[node]):
                 self.double_round = True
             else:
-                self.hashmax[node].append((target_edge,edge_val))
+                self.hashmax[node].append((target_edge,int(edge_val)))
+
+        elif self.edges_value and edge_val and name_val:
+            if target_edge in map(lambda x:x[0], self.hashmax[node]):
+                self.double_round = True
+            else:
+                self.hashmax[node].append((target_edge,int(edge_val),name_val))
+
 
     def print_hashMap(self, sorted_ = False, level = None):
         """
@@ -405,6 +415,54 @@ class HMGraph:
                     if (matrix[i][k] + matrix[k][j] < matrix[i][j]):
                         matrix[i][j] = float("-inf")
 
+    def edmons_karp(self):
+        """
+        create deep copy of dict
+        with dfs find path from starto to exit
+        while you can find path do that
+        take value from edge to opposite edge
+        find path there where si edge greater than 0
+        return all paths
+        d = {}
+        d2 = copy.deepcopy(d)
+        """
+        id_ = 0
+        paths = {}
+        worker = copy.deepcopy(self.hashmax)
+        while True:
+            stack, visited, vertex = [(self.first_node,float('inf'),'')],[],' '
+            while stack and vertex[0] != 'EXIT':
+                vertex = stack.pop()
+                visited.append(vertex)
+                for next_ in worker[vertex[0]]:
+                    if next_ not in stack and next_ not in visited and next_[1] > 0:
+                        stack.append(next_)
+            if not stack and 'EXIT' not in list(map(lambda x:x[0],visited)):
+                #print(stack,visited)
+                break
+            paths[id_] = (visited,min(visited,key = lambda x: x[1])[1],len(visited))
+            #print(visited)
+            #print(paths)
+            for i in range(len(visited)-1):
+                if visited[i][1] > 0:
+                    worker[visited[i][0]] = [(x[0],x[1]-paths[id_][1],x[2]) if
+                            x == visited[i+1] else x for x in
+                            worker[visited[i][0]]]
+                    worker[visited[i+1][0]] = [(x[0],x[1]+paths[id_][1],x[2]) if
+                            x == visited[i] else x for x in
+                            worker[visited[i+1][0]]]
+                    #pricist obracenou hranu
+            id_ += 1
+        for key, val in paths.items():
+            print(key,': ',val)
+
+        if not id_:
+            return None
+        else:
+            return worker
+
+
+
     def cpm_long(self,first_node,s_nodes):
         """
         this algirithm is similar to critial path method, only uses main part
@@ -508,18 +566,3 @@ class HMGraph:
             (cli,graph) = body(graph)
             cliques.append(cli)
         return cliques
-
-if __name__ == "__main__":
-    test1 = HMGraph(['A','B','C','D'],True)
-    test1.insert_edge('A','B',1)
-    test1.insert_edge('A','C',3)
-    test1.insert_edge('B','A',1)
-    test1.insert_edge('B','C',2)
-    test1.insert_edge('C','B',2)
-    test1.insert_edge('C','A',3)
-    test1.insert_edge('C','D',5)
-    test1.insert_edge('D','C',5)
-    print("Nodes:",test1.get_nodes())
-    print("Edges:",test1.get_edges())
-    test1.print_hashMap()
-    #test1.travelling_salesman()
