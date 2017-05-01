@@ -38,26 +38,41 @@ def solve_with_graph(sol_data):
         if hm:
             for key, val in sol_data[1].items():
                 hm.insert_edge(val[0],val[1],val[2],key)
-                hm.insert_edge(val[1],val[0],'0',key)
-            hm.print_hashMap()
+                hm.insert_edge(val[1],val[0],'0',key+'_')
+            #hm.print_hashMap()
             return (hm.edmons_karp(),hm)
 
-def print_final(final_data,hm):
+def print_final(final_data,max_size,hm):
     if final_data:
-        print('#'*77)
-        for key, val in hm.hashmax.items():
-            print(key,': ',val)
-        print('#'*77)
-        for key, val in final_data.items():
-            print(key,': ',val)
+        print('Grup size: %s' % final_data[0])
+        data1 = sorted(list(filter(lambda x: x[2][-1] !=
+            '_',reduce(list.__add__,hm.hashmax.values()))),key = lambda
+            g:g[2])
+        data2 = sorted(list(filter(lambda x: x[2][-1] !=
+            '_',reduce(list.__add__,final_data[1].values()))),key = lambda
+            g:g[2])
+        data3 = sorted(list(filter(lambda x: x[2][-1] ==
+            '_',reduce(list.__add__,final_data[1].values()))),key = lambda
+            g:g[2])
+
+        for a,b,c in zip(data1,data2,data3):
+            print('%s: %d' % (a[2],a[1]-b[1]),"!" if b[1] == 0 else
+                    "")#,'p:',a[1],'b:',b[1],'s:',c[1],"OK" if a[1] == b[1]+c[1] else
+                    #b[1],c[1]))
+        print('Time: ',int(max_size/final_data[0]) +
+                (max_size % final_data[0] > 0) +
+                final_data[2][2])
     else:
         print("Error graf se nepodarilo unikovou chodbu")
 
 if __name__ == "__main__":
     try:
         data = parse_data(pyp.get_input_data())
-        final_data,hm = solve_with_graph(data)
-        print_final(final_data,hm)
+        final_data, graph_data = solve_with_graph(data)
+        print_final(final_data,int(data[0][1]),graph_data)
     except KeyboardInterrupt:
         pass
+
+#print('%s: %d' % (sorted_val[2][:-1],puvodni - sorted_val[1]))
+#print('%s: %s' % () + '!' if False else '')
 

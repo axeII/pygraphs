@@ -416,16 +416,6 @@ class HMGraph:
                         matrix[i][j] = float("-inf")
 
     def edmons_karp(self):
-        """
-        create deep copy of dict
-        with dfs find path from starto to exit
-        while you can find path do that
-        take value from edge to opposite edge
-        find path there where si edge greater than 0
-        return all paths
-        d = {}
-        d2 = copy.deepcopy(d)
-        """
         id_ = 0
         paths = {}
         worker = copy.deepcopy(self.hashmax)
@@ -435,31 +425,40 @@ class HMGraph:
                 vertex = stack.pop()
                 visited.append(vertex)
                 for next_ in worker[vertex[0]]:
-                    if next_ not in stack and next_ not in visited and next_[1] > 0:
+                    if next_[0] not in [st[0] for st in stack] and \
+                       next_[0] not in [vis[0] for vis in visited] and \
+                       next_[1] > 0:
                         stack.append(next_)
+                        """
+                        this finds one specific way, however when it's used
+                        algorithm does not find very good way, in some cases
+                        giberish
+                        break
+                        """
             if not stack and 'EXIT' not in list(map(lambda x:x[0],visited)):
-                #print(stack,visited)
                 break
-            paths[id_] = (visited,min(visited,key = lambda x: x[1])[1],len(visited))
-            #print(visited)
-            #print(paths)
+            paths[id_] = (visited,min(visited,key = lambda x: x[1])[1],
+                    len(list(filter(lambda x:x[1] < float("inf"),visited))))
             for i in range(len(visited)-1):
                 if visited[i][1] > 0:
                     worker[visited[i][0]] = [(x[0],x[1]-paths[id_][1],x[2]) if
-                            x == visited[i+1] else x for x in
+                            x[0] == visited[i+1][0] else x for x in
                             worker[visited[i][0]]]
                     worker[visited[i+1][0]] = [(x[0],x[1]+paths[id_][1],x[2]) if
-                            x == visited[i] else x for x in
+                            x[0] == visited[i][0] else x for x in
                             worker[visited[i+1][0]]]
-                    #pricist obracenou hranu
+            #from termcolor import colored
+            #print(colored('%s: %s'%(id_,paths[id_]),'blue'))
             id_ += 1
-        for key, val in paths.items():
-            print(key,': ',val)
-
+            #for key, val in worker.items():
+            #    print(colored('%s: %s'%(key,val),'red'))
+        #for key, val in paths.items():
+        #    print(colored('%s: %s'%(key,val),'green'))
+        max_path = max(paths.values(),key = lambda x: x[2])
         if not id_:
             return None
         else:
-            return worker
+            return (sum([x[1] for x in paths.values()]),worker,max_path)
 
 
 
