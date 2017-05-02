@@ -12,6 +12,7 @@ import pprint
 import copy
 import random
 import collections
+from functools import reduce
 
 """
 graph = { "a" : [("c",4)],
@@ -77,6 +78,7 @@ class HMGraph:
         """
         current dilema on graph structure - should be same architecture
         with value as zeros like g : ('n',0) or have two architerues
+        should be third paramater non mandatori?
         """
         if not self.edges_value:
             if target_edge in self.hashmax[node]:
@@ -415,6 +417,32 @@ class HMGraph:
                     if (matrix[i][k] + matrix[k][j] < matrix[i][j]):
                         matrix[i][j] = float("-inf")
 
+    def paring_hungarian(self):
+        """Here goes main body of cution as counting of parring
+        I DON'T EVEN NEED FUCKING ZERO CHECK UWAH
+        false alarm - recycled code - ufff
+        """
+        madar = {}
+        for key,val in self.hashmax.items():
+            if key[0] == 'B':
+                madar[key] = val
+        """editing all rows"""
+        for key, val in madar.items():
+            if 0 not in [x[1] for x in val]:
+                min_ = min(val,key = lambda k: k[1])
+                madar[key] = [(y[0],y[1]-min_[1]) for y in val]
+        """editing all columns"""
+        for i, data in enumerate(madar.items()):
+            sys.exit()
+            if 0 not in list(reduce(list.__add__,[[col for col in row if
+                row.index(col) == i] for row in madar.vals()])):
+                min_ = min(list(reduce(list.__add__,[[col for col in row if
+                row.index(col) == i] for row in madar.vals()])),key = lambda k: k[1])
+                madar[data[0]] = [(y[0],y[1]-min_[1]) for y in data[1] if val.index(y)
+                        == i]
+        """könig's quite"""
+
+
     def edmons_karp(self):
         id_ = 0
         paths = {}
@@ -447,13 +475,7 @@ class HMGraph:
                     worker[visited[i+1][0]] = [(x[0],x[1]+paths[id_][1],x[2]) if
                             x[0] == visited[i][0] else x for x in
                             worker[visited[i+1][0]]]
-            #from termcolor import colored
-            #print(colored('%s: %s'%(id_,paths[id_]),'blue'))
             id_ += 1
-            #for key, val in worker.items():
-            #    print(colored('%s: %s'%(key,val),'red'))
-        #for key, val in paths.items():
-        #    print(colored('%s: %s'%(key,val),'green'))
         max_path = max(paths.values(),key = lambda x: x[2])
         if not id_:
             return None

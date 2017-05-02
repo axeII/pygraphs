@@ -45,20 +45,17 @@ def solve_with_graph(sol_data):
 def print_final(final_data,max_size,hm):
     if final_data:
         print('Grup size: %s' % final_data[0])
-        data1 = sorted(list(filter(lambda x: x[2][-1] !=
+
+        past = sorted(list(filter(lambda x: x[2][-1] !=
             '_',reduce(list.__add__,hm.hashmax.values()))),key = lambda
             g:g[2])
-        data2 = sorted(list(filter(lambda x: x[2][-1] !=
-            '_',reduce(list.__add__,final_data[1].values()))),key = lambda
-            g:g[2])
-        data3 = sorted(list(filter(lambda x: x[2][-1] ==
+        future = sorted(list(filter(lambda x: x[2][-1] !=
             '_',reduce(list.__add__,final_data[1].values()))),key = lambda
             g:g[2])
 
-        for a,b,c in zip(data1,data2,data3):
-            print('%s: %d' % (a[2],a[1]-b[1]),"!" if b[1] == 0 else
-                    "")#,'p:',a[1],'b:',b[1],'s:',c[1],"OK" if a[1] == b[1]+c[1] else
-                    #b[1],c[1]))
+        for data1, data2 in zip(past,future):
+            print('%s: %d' % (data1[2],data1[1]-data2[1]),"!" if data2[1] == 0 else
+                    "")
         print('Time: ',int(max_size/final_data[0]) +
                 (max_size % final_data[0] > 0) +
                 final_data[2][2])
@@ -72,7 +69,3 @@ if __name__ == "__main__":
         print_final(final_data,int(data[0][1]),graph_data)
     except KeyboardInterrupt:
         pass
-
-#print('%s: %d' % (sorted_val[2][:-1],puvodni - sorted_val[1]))
-#print('%s: %s' % () + '!' if False else '')
-
