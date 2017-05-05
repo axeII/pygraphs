@@ -57,7 +57,7 @@ def print_final(final_data):
         for k,val in final_data.items():
             count += val[1]
             print(val[0],val[1])
-        print("Celkovy pocet %s" % count)
+        print("Celkem: %d" % count)
     else:
         print("Error graf totall error")
 

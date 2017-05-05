@@ -270,7 +270,6 @@ class HMGraph:
     def find_articulation(self):
         answer = {}
         for node in self.get_nodes():
-            #print(node)
             copy_graph = {}
             for node_, edge in self.hashmax.items():
                 copy_graph[node_] = edge[:]
@@ -359,7 +358,7 @@ class HMGraph:
         for key in sorted(self.hashmax.keys()):
             salesman[key] = sorted(self.hashmax[key][:], key = lambda x : x[0])
 
-        while len(salesman.keys()) > 1:#not all(travel.hashmax.values()):some node is empty of graph
+        while len(salesman.keys()) > 1:
             for row in sorted(salesman.keys()):
                 min_ = min(salesman[row],key = lambda x: x[1])
                 coa = [col for col in salesman[row] if col[1] != float("inf")]
@@ -424,10 +423,6 @@ class HMGraph:
             if key[0] == 'B':
                 madar[key] = val
 
-        #printing table delete
-        #for k,val in sorted(madar.items(),key=lambda x: x[0]):
-        #    print(k,[v[1] for v in val])
-        #print('\n')
         """editing all rows"""
         for key, val in sorted(madar.items(),key=lambda x: x[0]):
             if 0 not in [x[1] for x in val]:
@@ -444,18 +439,14 @@ class HMGraph:
 
         while(True):
             """
-            hledani nezavisle nuly -> M
+            finding independece zeros -> M
             """
-            #for k,val in sorted(madar.items(),key=lambda x: x[0]):
-            #            print(k,[v[1] for v in val])
-            #print('\n')
             independent_zero = [False for t in madar.keys()]
             positions = []
             visited = []
             for key_l, line in sorted(madar.items(),key = lambda x:x[0]):
                 for r in range(len(line)):
                     if line[r][1] == 0 and not independent_zero[r]:
-                        #print(line,'\n',line[r][1],key_l,r)
                         independent_zero[r] = True
                         positions.append((key_l,r))
                         visited.append(key_l)
@@ -470,14 +461,7 @@ class HMGraph:
                         index += 1
                     return right_destinations
 
-            """könig's line
-            hledam radek s nejvetsim poctem nul, ale sloupec s nejvetsim pocet nul,
-            porovnam, zvolim vetsi vartinu -> skrtam,algoritmus opakuji dokud
-            nejsou vsechnu nuly skrtnuty (mozna obarveny) nebo nekoupzil jsem pocet
-            k srktu, pokud nalezeno a pouzito < k tak nepreskrtnuty odecist a
-            dvojite, pricist min cislo nepreskrtnutych
-            zacit tam kde neni nezavisla veta
-            """
+            """könig's line"""
             k=0
             konig = {}
             all_zeros = True
@@ -500,7 +484,6 @@ class HMGraph:
                 if value[marked_column][1] == 0:
                     row_indexes.append(key)
 
-            print(row_indexes,column_indexes)
             #obravim sloupec
             for ci in column_indexes:
                 for key,k_line in sorted(konig.items(),key = lambda x:x[0]):
@@ -568,11 +551,9 @@ class HMGraph:
                 shortcut = True
 
             if all_zeros and k == len([x for x in independent_zero if x]):
-                print("nalezen reseni je spravne ale volba nezavislych nul je spatne")
                 pass
             elif (all_zeros and k < len([x for x in independent_zero if x])) or\
             (all_zeros and shortcut):
-                print("nalezene reseni neni optimalne je treba prepocita matici")
                 konig_min = min(list(reduce(list.__add__,[[l[1] for l in line if
                     l[2] == 0] for line in konig.values()])))
                 for key, value in sorted(konig.items(),key = lambda x:x[0]):
@@ -586,7 +567,6 @@ class HMGraph:
                             chosen_one.append((va[0],va[1]+konig_min))
                     madar[key] = chosen_one
             else:
-                print(all_zeros,shortcut)
                 print('Error nejsou zaskrtnuty vsechny nuly')
                 sys.exit()
 
