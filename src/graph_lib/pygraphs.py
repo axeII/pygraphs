@@ -418,30 +418,177 @@ class HMGraph:
                         matrix[i][j] = float("-inf")
 
     def paring_hungarian(self):
-        """Here goes main body of cution as counting of parring
-        I DON'T EVEN NEED FUCKING ZERO CHECK UWAH
-        false alarm - recycled code - ufff
-        """
+        """copying main graph"""
         madar = {}
-        for key,val in self.hashmax.items():
+        for key,val in sorted(self.hashmax.items(),key=lambda x: x[0]):
             if key[0] == 'B':
                 madar[key] = val
+
+        #printing table delete
+        #for k,val in sorted(madar.items(),key=lambda x: x[0]):
+        #    print(k,[v[1] for v in val])
+        #print('\n')
         """editing all rows"""
-        for key, val in madar.items():
+        for key, val in sorted(madar.items(),key=lambda x: x[0]):
             if 0 not in [x[1] for x in val]:
                 min_ = min(val,key = lambda k: k[1])
                 madar[key] = [(y[0],y[1]-min_[1]) for y in val]
         """editing all columns"""
-        for i, data in enumerate(madar.items()):
-            sys.exit()
-            if 0 not in list(reduce(list.__add__,[[col for col in row if
-                row.index(col) == i] for row in madar.vals()])):
-                min_ = min(list(reduce(list.__add__,[[col for col in row if
-                row.index(col) == i] for row in madar.vals()])),key = lambda k: k[1])
-                madar[data[0]] = [(y[0],y[1]-min_[1]) for y in data[1] if val.index(y)
-                        == i]
-        """könig's quite"""
+        for i, data in enumerate(sorted(madar.items(),key=lambda x: x[0])):
+            if 0 not in list(reduce(list.__add__,
+                [[col for col in row if row.index(col) == i] for row in madar.values()])):
+                min_ = min(list(reduce(list.__add__,
+                    [[col for col in row if row.index(col) == i] for row in madar.values()])),
+                    key = lambda k: k[1])
+                madar[data[0]] = [(y[0],y[1]-min_[1]) if data[1].index(y) == i else y for y in data[1]]
 
+        while(True):
+            """
+            hledani nezavisle nuly -> M
+            """
+            #for k,val in sorted(madar.items(),key=lambda x: x[0]):
+            #            print(k,[v[1] for v in val])
+            #print('\n')
+            independent_zero = [False for t in madar.keys()]
+            positions = []
+            visited = []
+            for key_l, line in sorted(madar.items(),key = lambda x:x[0]):
+                for r in range(len(line)):
+                    if line[r][1] == 0 and not independent_zero[r]:
+                        #print(line,'\n',line[r][1],key_l,r)
+                        independent_zero[r] = True
+                        positions.append((key_l,r))
+                        visited.append(key_l)
+                        break
+            if all(independent_zero):
+                if len(positions) == len(madar.keys()):
+                    right_destinations = {}
+                    index = 0
+                    for des in positions:
+                        right_destinations[index] = ("%s %s" %
+                                (des[0],madar[des[0]][des[1]][0]),self.hashmax[des[0]][r][1])
+                        index += 1
+                    return right_destinations
+
+            """könig's line
+            hledam radek s nejvetsim poctem nul, ale sloupec s nejvetsim pocet nul,
+            porovnam, zvolim vetsi vartinu -> skrtam,algoritmus opakuji dokud
+            nejsou vsechnu nuly skrtnuty (mozna obarveny) nebo nekoupzil jsem pocet
+            k srktu, pokud nalezeno a pouzito < k tak nepreskrtnuty odecist a
+            dvojite, pricist min cislo nepreskrtnutych
+            zacit tam kde neni nezavisla veta
+            """
+            k=0
+            konig = {}
+            all_zeros = True
+            shortcut = False
+            for key, val in sorted(madar.items(),key = lambda x:x[0]):
+                konig[key] = [(v[0],v[1],0) for v in val]
+
+            """getting index to right columns and rows
+            """
+            marked_row = list(set(madar.keys()) - set(visited))[0]
+            marked_column = independent_zero.index(False)
+
+            column_indexes = []
+            for ind,mr in enumerate(madar[marked_row]):
+                if mr[1] == 0:
+                    column_indexes.append(ind)
+
+            row_indexes = []
+            for key,value in sorted(madar.items(),key = lambda x:x[0]):
+                if value[marked_column][1] == 0:
+                    row_indexes.append(key)
+
+            print(row_indexes,column_indexes)
+            #obravim sloupec
+            for ci in column_indexes:
+                for key,k_line in sorted(konig.items(),key = lambda x:x[0]):
+                    konig[key] = [(y[0],y[1],y[2]+1) if konig[key].index(y) ==
+                            ci else y for y in konig[key]]
+
+                for i, k_line in enumerate(sorted(konig.items(),key = lambda
+                    x:x[0])):
+                    if i == ci:
+                        konig[k_line[0]] = [(n_l[0],n_l[1],True) for n_l in k_line[1]]
+
+            #obarvim radek
+            for ri in row_indexes:
+                konig[ri] = [(y[0],y[1],y[2]+1) for y in konig[ri]]
+
+            #kontrola jestli jsou oznacene nuly
+            for line in konig.values():
+                    for l in line:
+                        if l[1] == 0 and l[2] == 0:
+                            all_zeros = False
+
+            if not all_zeros:
+                """finding rest zeros """
+                for k in range(len(konig.keys())):
+                    zeros_line = (0,None)
+                    zeros_column = (0,None)
+
+                    """finding column with highes zero count"""
+                    for i,line in enumerate(konig.values()):
+                        if line.count(0) > zeros_line[0] and all([t[2] for t in line]):
+                            zeros_line = (line.count(0),i)
+
+                    """finding column with highes zero count"""
+                    for i in range(len(madar.keys())):
+                        column = []
+                        for line in madar.values():
+                            column.append(line[i])
+                        if column.count(0) > zeros_column[0] and all([t[2] for t in column]):
+                            zeros_column = (line.count(0),i)
+
+                    if not zeros_column and not zeros_line:
+                        print("Error no zeros found canceling out")
+                        return None
+
+                    elif zeros_column[0] < zeros_line[0] or zeros_line[0] == zeros_column[0]:
+                        #obravim slopec
+                        for i, k_line in enumerate(konig.items()):
+                            if i == zeros_line[1]:
+                                konig[k_line[0]] = [(n_l[0],n_l[1],n_l[2]+1) for n_l in k_line[1]]
+
+                    elif zeros_column[0] > zeros_line[0]:
+                        #obravim radek, data[1] == line
+                        for i,data in enumerate(konig.items()):
+                            konig[data[0]] = [(y[0],y[1],y[2]+1) if data[1].index(y) == i else y for y in data[1]]
+
+                    #jsou vsechny nuly obarveny?
+                    for line in konig.values():
+                        for l in line:
+                            if l[1] == 0 and l[2] == 0:
+                                all_zeros = False
+
+                    if all_zeros:
+                        break
+            else:
+                shortcut = True
+
+            if all_zeros and k == len([x for x in independent_zero if x]):
+                print("nalezen reseni je spravne ale volba nezavislych nul je spatne")
+                pass
+            elif (all_zeros and k < len([x for x in independent_zero if x])) or\
+            (all_zeros and shortcut):
+                print("nalezene reseni neni optimalne je treba prepocita matici")
+                konig_min = min(list(reduce(list.__add__,[[l[1] for l in line if
+                    l[2] == 0] for line in konig.values()])))
+                for key, value in sorted(konig.items(),key = lambda x:x[0]):
+                    chosen_one = []
+                    for va in value:
+                        if va[2] == 0:
+                            chosen_one.append((va[0],va[1]-konig_min))
+                        elif va[2] == 1:
+                            chosen_one.append((va[0],va[1]))
+                        elif va[2] == 2:
+                            chosen_one.append((va[0],va[1]+konig_min))
+                    madar[key] = chosen_one
+            else:
+                print(all_zeros,shortcut)
+                print('Error nejsou zaskrtnuty vsechny nuly')
+                sys.exit()
 
     def edmons_karp(self):
         id_ = 0

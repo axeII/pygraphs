@@ -35,9 +35,9 @@ def solve_with_graph(sol_data):
     def count_metric(data,posA,posB):
         position1 = data[posA][1].split(',')
         position2 = data[posB][1].split(',')
-        rho = abs(int(position1[0]) - int(position1[1])) +\
-            abs(int(position2[0]) - int(position2[1]))
-        return rho
+        rho = abs(int(position1[0]) - int(position2[0])) +\
+            abs(int(position1[1]) - int(position2[1]))
+        return str(rho)
 
     if sol_data:
         hm = pyg.HMGraph(sorted(sol_data.keys()),True)
@@ -47,13 +47,17 @@ def solve_with_graph(sol_data):
                 for key_p in list(filter(lambda s:s[0]=='P',sorted(sol_data.keys()))):
                     hm.insert_edge(key_b,key_p,count_metric(sol_data,key_b,key_p))
                     hm.insert_edge(key_p,key_b,count_metric(sol_data,key_p,key_b))
-            hm.print_hashMap()
+            #hm.print_hashMap()
             return hm.paring_hungarian()
     return None
 
 def print_final(final_data):
+    count = 0
     if final_data:
-        pass
+        for k,val in final_data.items():
+            count += val[1]
+            print(val[0],val[1])
+        print("Celkovy pocet %s" % count)
     else:
         print("Error graf totall error")
 
